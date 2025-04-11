@@ -1,6 +1,5 @@
 import React from 'react';
-import {GameRenderer} from "@components/Core/gameCore/renderer/GameRenderer.tsx";
-
+import { GameRenderer } from './gameCore/renderer/GameRenderer';
 interface CoreProps {
   stageId?: string;
 }

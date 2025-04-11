@@ -21,9 +21,12 @@ const Editor: React.FC = () => {
   });
 
   const handleTerrainSelect = (terrain: TerrainType) => {
+    console.log('Selecting terrain:', terrain);
     setEditorState(prev => ({
       ...prev,
       selectedTerrain: terrain,
+      // Keep the existing terrain array unchanged
+      terrain: prev.terrain
     }));
   };
 

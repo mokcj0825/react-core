@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Core from './components/Core';
-import Editor from './components/Editor';
+import Editor from './components/Editor/index';
 import Log from './components/Log';
 import Back from './components/Back';
 import './App.css';

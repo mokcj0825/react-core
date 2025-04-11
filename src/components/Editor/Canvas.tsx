@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { TerrainType } from '../Core/gameCore/types/TerrainType';
 import { createHexCoordinate, HexCoordinate } from '../Core/gameCore/types/HexCoordinate';
 import { GridLayout } from '../Core/gameCore/system-config/GridLayout';
@@ -13,6 +13,19 @@ interface CanvasProps {
   backgroundImage: string | null;
 }
 
+const TERRAIN_COLORS: Record<TerrainType, string> = {
+  plain: '#A9DFBF',
+  mountain: '#D5DBDB',
+  forest: '#82E0AA',
+  sea: '#85C1E9',
+  river: '#5DADE2',
+  cliff: '#F5B7B1',
+  road: '#F7DC6F',
+  wasteland: '#F0B27A',
+  ruins: '#D7BDE2',
+  swamp: '#A3E4D7',
+};
+
 const Canvas: React.FC<CanvasProps> = ({ 
   width, 
   height, 
@@ -21,6 +34,10 @@ const Canvas: React.FC<CanvasProps> = ({
   onCellClick,
   backgroundImage
 }) => {
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const lastCellRef = useRef<{x: number, y: number} | null>(null);
+
   // Generate grid in the same way as MapRenderer
   const generateGrid = () => {
     const grid: HexCoordinate[][] = [];
@@ -40,15 +57,99 @@ const Canvas: React.FC<CanvasProps> = ({
   const mapWidth = width * GridLayout.WIDTH + GridLayout.ROW_OFFSET + (ScrollConfig.PADDING * 2);
   const mapHeight = height * GridLayout.WIDTH * 0.75 + (ScrollConfig.PADDING * 2);
 
+  // Function to find the hex cell under the mouse position
+  const findCellUnderMouse = useCallback((clientX: number, clientY: number) => {
+    if (!canvasRef.current) return null;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const scrollLeft = canvasRef.current.scrollLeft;
+    const scrollTop = canvasRef.current.scrollTop;
+    
+    // Calculate relative position within the canvas
+    const x = clientX - rect.left + scrollLeft;
+    const y = clientY - rect.top + scrollTop;
+    
+    // Find the cell that contains this point
+    for (let rowIndex = 0; rowIndex < grid.length; rowIndex++) {
+      const row = grid[rowIndex];
+      for (let colIndex = 0; colIndex < row.length; colIndex++) {
+        const cell = row[colIndex];
+        const cellElement = document.getElementById(`hex-${cell.x}-${cell.y}`);
+        
+        if (cellElement) {
+          const cellRect = cellElement.getBoundingClientRect();
+          const cellX = cellRect.left - rect.left + scrollLeft;
+          const cellY = cellRect.top - rect.top + scrollTop;
+          
+          // Check if point is within this hex cell
+          // This is a simplified check - for a more accurate check, we'd need to use the hexagon's clip path
+          if (
+            x >= cellX && 
+            x <= cellX + GridLayout.WIDTH && 
+            y >= cellY && 
+            y <= cellY + GridLayout.WIDTH
+          ) {
+            return { x: cell.x, y: cell.y };
+          }
+        }
+      }
+    }
+    
+    return null;
+  }, [grid]);
+
+  const handleMouseDown = useCallback((clientX: number, clientY: number) => {
+    const cell = findCellUnderMouse(clientX, clientY);
+    if (cell) {
+      setIsMouseDown(true);
+      lastCellRef.current = cell;
+      onCellClick(cell.x, cell.y);
+    }
+  }, [onCellClick, findCellUnderMouse]);
+
+  const handleMouseMove = useCallback((clientX: number, clientY: number) => {
+    if (isMouseDown) {
+      const cell = findCellUnderMouse(clientX, clientY);
+      if (cell && (!lastCellRef.current || lastCellRef.current.x !== cell.x || lastCellRef.current.y !== cell.y)) {
+        lastCellRef.current = cell;
+        onCellClick(cell.x, cell.y);
+      }
+    }
+  }, [isMouseDown, onCellClick, findCellUnderMouse]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsMouseDown(false);
+    lastCellRef.current = null;
+  }, []);
+
+  // Add global mouse up event listener to ensure we catch mouse up events outside the canvas
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isMouseDown) {
+        setIsMouseDown(false);
+      }
+    };
+    
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isMouseDown]);
+
   return (
-    <div style={{ 
-      height: '100%', 
-      width: '100%',
-      position: 'relative',
-      overflow: 'hidden',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
+    <div 
+      ref={canvasRef}
+      style={{ 
+        height: '100%', 
+        width: '100%',
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <div style={{
         padding: '16px',
         borderBottom: '1px solid #ccc',
@@ -113,8 +214,10 @@ const Canvas: React.FC<CanvasProps> = ({
                   const terrainType = terrain[coordinate.y]?.[coordinate.x] || 'plain';
                   return (
                     <div
+                      id={`hex-${coordinate.x}-${coordinate.y}`}
                       key={`${coordinate.x},${coordinate.y}`}
-                      onClick={() => onCellClick(coordinate.x, coordinate.y)}
+                      onMouseDown={(e) => handleMouseDown(e.clientX, e.clientY)}
+                      onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
                       style={{
                         width: `${GridLayout.WIDTH}px`,
                         height: `${GridLayout.WIDTH}px`,
@@ -131,8 +234,9 @@ const Canvas: React.FC<CanvasProps> = ({
                         flexShrink: 0,
                         flexGrow: 0,
                         position: 'relative',
-                        backgroundColor: terrainType === selectedTerrain ? 'rgba(255, 255, 0, 0.3)' : 'rgba(0, 0, 0, 0.1)',
+                        backgroundColor: TERRAIN_COLORS[terrainType],
                         zIndex: 1,
+                        opacity: 0.5,
                       }}
                     >
                       {/* Border for better visibility */}

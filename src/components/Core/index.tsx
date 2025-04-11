@@ -1,18 +1,23 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import {GameRenderer} from "@components/Core/gameCore/renderer/GameRenderer.tsx";
 
-const Core: React.FC = () => {
+interface CoreProps {
+  stageId: string;
+}
+
+const Core: React.FC<CoreProps> = ({ stageId = '0001' }) => {
   return (
-    <div className="core-container">
-      <h1 className="component-title">Core Game</h1>
-      <div className="component-content">
-        <p>This is the main game component.</p>
-        <div className="back-link">
-          <Link to="/">Back to Home</Link>
-        </div>
-      </div>
+    <div style={{ 
+      width: '100vw', 
+      height: '100vh', 
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      overflow: 'hidden'
+    }}>
+      <GameRenderer stageId={stageId} />
     </div>
   );
 };
 
-export default Core; 
+export default Core;

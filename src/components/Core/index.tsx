@@ -2,7 +2,7 @@ import React from 'react';
 import {GameRenderer} from "@components/Core/gameCore/renderer/GameRenderer.tsx";
 
 interface CoreProps {
-  stageId: string;
+  stageId?: string;
 }
 
 const Core: React.FC<CoreProps> = ({ stageId = '0001' }) => {

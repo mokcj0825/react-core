@@ -41,10 +41,12 @@ const Canvas: React.FC<CanvasProps> = ({
   // Generate grid in the same way as MapRenderer
   const generateGrid = () => {
     const grid: HexCoordinate[][] = [];
-    for (let y = height - 1; y >= 0; y--) {
+    // Start from bottom-left (0,0) and go up
+    for (let y = 0; y < height; y++) {
       const row: HexCoordinate[] = [];
       for (let x = 0; x < width; x++) {
-        row.push(createHexCoordinate(x, y));
+        // Use height-1-y to flip the y-coordinate so 0 is at the bottom
+        row.push(createHexCoordinate(x, height - 1 - y));
       }
       grid.push(row);
     }
@@ -89,6 +91,7 @@ const Canvas: React.FC<CanvasProps> = ({
             y >= cellY && 
             y <= cellY + GridLayout.WIDTH
           ) {
+            // Return the cell coordinates as they are, since they're already in the correct format
             return { x: cell.x, y: cell.y };
           }
         }
@@ -139,14 +142,7 @@ const Canvas: React.FC<CanvasProps> = ({
   return (
     <div 
       ref={canvasRef}
-      style={{ 
-        height: '100%', 
-        width: '100%',
-        position: 'relative',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+      style={canvasStyle}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
@@ -187,17 +183,7 @@ const Canvas: React.FC<CanvasProps> = ({
               }}
             />
           )}
-          <div style={{
-            position: 'absolute',
-            top: ScrollConfig.PADDING,
-            left: ScrollConfig.PADDING,
-            width: mapWidth - (ScrollConfig.PADDING * 2),
-            height: mapHeight - (ScrollConfig.PADDING * 2),
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            boxSizing: 'border-box',
-            margin: 0,
-            padding: 0,
-          }}>
+          <div style={getMapStyle(mapWidth, mapHeight)}>
             {grid.map((row, index) => (
               <div key={index} style={{
                 display: 'flex',
@@ -211,6 +197,9 @@ const Canvas: React.FC<CanvasProps> = ({
                 transform: 'translateY(-12.5px)', // Adjust vertical alignment
               }}>
                 {row.map((coordinate) => {
+                  // Access terrain using the correct indices
+                  // The terrain array is [rows][cols], but we need to access it as [y][x]
+                  // The coordinate.y is already flipped in the grid generation
                   const terrainType = terrain[coordinate.y]?.[coordinate.x] || 'plain';
                   return (
                     <div
@@ -285,4 +274,27 @@ const Canvas: React.FC<CanvasProps> = ({
   );
 };
 
-export default Canvas; 
+export default Canvas;
+
+const canvasStyle = {
+  height: '100%',
+  width: '100%',
+  position: 'relative',
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+} as const;
+
+const getMapStyle = (mapWidth: number, mapHeight: number) => {
+  return {
+    position: 'absolute',
+    top: ScrollConfig.PADDING,
+    left: ScrollConfig.PADDING,
+    width: mapWidth - (ScrollConfig.PADDING * 2),
+    height: mapHeight - (ScrollConfig.PADDING * 2),
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    boxSizing: 'border-box',
+    margin: 0,
+    padding: 0,
+  } as const;
+}

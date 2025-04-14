@@ -1,10 +1,10 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { GameRenderer } from './gameCore/renderer/GameRenderer';
-interface CoreProps {
-  stageId?: string;
-}
 
-const Core: React.FC<CoreProps> = ({ stageId = '0001' }) => {
+const Core: React.FC = () => {
+  const { stageId = '0001' } = useParams<{ stageId?: string }>();
+  
   return (
     <div style={{ 
       width: '100vw', 

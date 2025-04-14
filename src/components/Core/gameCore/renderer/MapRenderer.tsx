@@ -64,7 +64,7 @@ export const MapRenderer: React.FC<Props> = ({ mapFile }) => {
    */
   const loadMapData = async () => {
     try {
-      const map = await import(`../map-data/${mapFile}`);
+      const map = await import(`../map-data/${mapFile}.json`);
       console.log(`Loaded map data for ${mapFile}:`, map);
       setMapData(map);
       
@@ -154,7 +154,7 @@ export const MapRenderer: React.FC<Props> = ({ mapFile }) => {
         {grid.map((row, index) => (
           <div key={index} style={gridStyle(height, index)}>
             {
-              row.map((coordinate) => renderHex(coordinate, mapData.terrain[coordinate.x][coordinate.y] as TerrainType))
+              row.map((coordinate) => renderHex(coordinate, mapData.terrain[coordinate.y][coordinate.x] as TerrainType))
             }
           </div>
         ))}

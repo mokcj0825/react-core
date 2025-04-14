@@ -44,6 +44,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/core" element={<Core />} />
+          <Route path="/core/:stageId" element={<Core />} />
           <Route path="/editor" element={<Editor />} />
           <Route path="/log" element={<Log />} />
           <Route path="/back" element={<Back />} />

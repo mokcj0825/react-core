@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import {Container} from "./Container";
 import {TerrainType} from "../../types/TerrainType";
 import {HighlightType} from "../../types/HighlightType";
+import { UIEventType, eventBus } from "../../../../../events/EventBus";
 
 interface Props {
 	terrain: TerrainType,
@@ -26,14 +27,40 @@ export const HexCell: React.FC<Props> = ({
 		return undefined;
 	};
 
+	const handleMouseEnter = () => {
+		setIsHovered(true);
+		// Notify the GridRenderer that the mouse has entered this cell
+		eventBus.publish({
+			type: UIEventType.CELL_HOVER,
+			payload: {
+				coordinate,
+				terrain
+			}
+		});
+	};
+
+	const handleMouseLeave = () => {
+		setIsHovered(false);
+		// Notify the GridRenderer that the mouse has left this cell
+		eventBus.publish({
+			type: UIEventType.CELL_LEAVE
+		});
+	};
+
 	return (
 		<>
-			<Container terrain={terrain} isHovered={isHovered} >
+			<Container 
+				terrain={terrain} 
+				isHovered={isHovered}
+				onMouseEnter={handleMouseEnter}
+				onMouseLeave={handleMouseLeave}
+			>
 				<Overlay />
 				<Highlight highlightType={getHighlightType()}
 				           fraction='player' />
 				<CellContent coordinate={coordinate}/>
 				<HoverIndicator isHovered={isHovered} />
+				<div>{terrain}</div>
 			</Container>
 		</>
 	)

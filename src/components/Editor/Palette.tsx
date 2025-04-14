@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { TerrainType } from '../Core/gameCore/types/TerrainType';
 
 interface PaletteProps {
@@ -10,6 +10,16 @@ interface PaletteProps {
   onHeightChange: (height: number) => void;
   backgroundImage: string | null;
   onBackgroundImageChange: (imagePath: string) => void;
+  terrain: TerrainType[][];
+  onLoadMap: (mapData: MapData) => void;
+}
+
+// Define the map data structure for saving/loading
+export interface MapData {
+  width: number;
+  height: number;
+  terrain: TerrainType[][];
+  backgroundImage: string | null;
 }
 
 const TERRAIN_TYPES: TerrainType[] = [
@@ -47,8 +57,13 @@ const Palette: React.FC<PaletteProps> = ({
   onWidthChange,
   onHeightChange,
   backgroundImage,
-  onBackgroundImageChange
+  onBackgroundImageChange,
+  terrain,
+  onLoadMap
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const mapFileInputRef = useRef<HTMLInputElement>(null);
+
   const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newWidth = parseInt(e.target.value, 10);
     if (!isNaN(newWidth) && newWidth > 0) {
@@ -68,6 +83,51 @@ const Palette: React.FC<PaletteProps> = ({
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       onBackgroundImageChange(imageUrl);
+    }
+  };
+
+  const handleSaveMap = () => {
+    // Create the map data object
+    const mapData: MapData = {
+      width,
+      height,
+      terrain,
+      backgroundImage
+    };
+    
+    // Convert to JSON string
+    const mapDataString = JSON.stringify(mapData);
+    
+    // Create a blob and download link
+    const blob = new Blob([mapDataString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create a temporary link element and trigger download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'map-data.json';
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleLoadMap = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const mapData = JSON.parse(event.target?.result as string) as MapData;
+          onLoadMap(mapData);
+        } catch (error) {
+          console.error('Error parsing map data:', error);
+          alert('Failed to load map data. Please check the file format.');
+        }
+      };
+      reader.readAsText(file);
     }
   };
 
@@ -163,9 +223,83 @@ const Palette: React.FC<PaletteProps> = ({
             </label>
             <input 
               id="background-image"
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={handleFileChange}
+              style={{ display: 'none' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ 
+          marginBottom: '24px',
+          backgroundColor: '#fff',
+          padding: '16px',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        }}>
+          <h3 style={{ margin: '0 0 16px 0', color: '#333' }}>Map Actions</h3>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '12px',
+          }}>
+            <button
+              onClick={handleSaveMap}
+              style={{
+                padding: '12px',
+                border: '1px solid #4CAF50',
+                borderRadius: '8px',
+                backgroundColor: '#fff',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s',
+                color: '#4CAF50',
+                fontWeight: 'bold',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#E8F5E9';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#fff';
+              }}
+            >
+              Save Map
+            </button>
+            <label 
+              htmlFor="load-map"
+              style={{ 
+                padding: '12px',
+                border: '1px solid #2196F3',
+                borderRadius: '8px',
+                backgroundColor: '#fff',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s',
+                color: '#2196F3',
+                fontWeight: 'bold',
+                textAlign: 'center',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#E3F2FD';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#fff';
+              }}
+            >
+              Load Map
+            </label>
+            <input 
+              id="load-map"
+              ref={mapFileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleLoadMap}
               style={{ display: 'none' }}
             />
           </div>

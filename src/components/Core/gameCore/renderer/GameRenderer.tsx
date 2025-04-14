@@ -17,7 +17,7 @@ export const GameRenderer: React.FC<GameRendererProps> = ({ stageId }) => {
 	useEffect(() => {
 		const loadStageData = async () => {
 			try {
-				const stage = await import(`../stage-data/stage-${stageId}`);
+				const stage = await import(`../stage-data/stage-${stageId}.json`);
 				setStageData(stage);
 			} catch (error) {
 				console.error('Failed to load stage data:', error);

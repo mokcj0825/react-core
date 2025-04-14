@@ -28,7 +28,7 @@ export class BackgroundRenderer {
       // Try to import the image directly
       try {
         // Updated path to match the actual directory structure
-        const imageModule = await import(`../../../../assets/maps/background/${pathWithExtension}`);
+        const imageModule = await import(`../../../../assets/maps/background/${pathWithExtension}.jpg`);
         
         // Cache the URL
         this.loadedBackgrounds.set(mapId, imageModule.default);

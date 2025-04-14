@@ -64,7 +64,7 @@ export const MapRenderer: React.FC<Props> = ({ mapFile }) => {
    */
   const loadMapData = async () => {
     try {
-      const map = await import(`../map-data/${mapFile}`);
+      const map = await import(`../map-data/${mapFile}.json`);
       console.log(`Loaded map data for ${mapFile}:`, map);
       setMapData(map);
       

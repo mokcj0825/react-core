@@ -18,6 +18,35 @@
   --transition: all 0.3s ease;
   --container-padding: 2rem;
   --card-padding: 2rem;
+  --scrollbar-thumb: #c1c1c1;
+  --scrollbar-track: #f1f1f1;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 body {
@@ -44,7 +73,6 @@ body {
 .app-container {
   width: 100%;
   margin: 0 auto;
-  padding: var(--container-padding);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -130,7 +158,6 @@ body {
   box-shadow: var(--shadow);
   max-width: 800px;
   margin: 0 auto;
-  padding: var(--container-padding);
   width: 100%;
   display: flex;
   flex-direction: column;

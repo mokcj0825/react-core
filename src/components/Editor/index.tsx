@@ -75,8 +75,15 @@ const Editor: React.FC = () => {
     // Update all state with the loaded map data
     setWidth(mapData.width);
     setHeight(mapData.height);
+    
+    // The terrain array from the loaded map is already in the correct format
+    // where [0][0] is at the bottom-left, so we can use it directly
     setTerrain(mapData.terrain);
-    setBackgroundImage(mapData.backgroundImage);
+    
+    // Only set background image if it exists in the loaded data
+    if (mapData.backgroundImage) {
+      setBackgroundImage(mapData.backgroundImage);
+    }
   }, []);
 
   return (

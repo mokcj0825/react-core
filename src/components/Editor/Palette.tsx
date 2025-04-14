@@ -19,7 +19,7 @@ export interface MapData {
   width: number;
   height: number;
   terrain: TerrainType[][];
-  backgroundImage: string | null;
+  backgroundImage: string | null | undefined;
 }
 
 const TERRAIN_TYPES: TerrainType[] = [
@@ -87,29 +87,30 @@ const Palette: React.FC<PaletteProps> = ({
   };
 
   const handleSaveMap = () => {
-    // Create the map data object
+    // Create the map data object with backgroundImage as undefined
     const mapData: MapData = {
       width,
       height,
-      terrain,
-      backgroundImage
+      terrain, // Use the terrain array directly without any mapping
+      backgroundImage: undefined
     };
     
-    // Convert to JSON string
-    const mapDataString = JSON.stringify(mapData);
+    // Convert to JSON string with proper formatting
+    const mapDataString = JSON.stringify(mapData, null, 2);
     
-    // Create a blob and download link
+    // Create a blob with proper MIME type
     const blob = new Blob([mapDataString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     
-    // Create a temporary link element and trigger download
+    // Create and trigger download with timestamp in filename
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'map-data.json';
+    a.download = `map-data-${timestamp}.json`;
     document.body.appendChild(a);
     a.click();
     
-    // Clean up
+    // Clean up resources
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };

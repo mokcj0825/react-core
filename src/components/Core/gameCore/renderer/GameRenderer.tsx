@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { MapRenderer } from './MapRenderer';
+import BottomBar from '../../../uiComponent/BottomBar';
 
 interface StageData {
 	map: string;
@@ -36,6 +37,7 @@ export const GameRenderer: React.FC<GameRendererProps> = ({ stageId }) => {
 			style={wrapperStyle}
 		>
 			<MapRenderer mapFile={stageData.map} />
+			<BottomBar />
 			{/* Future renderers will go here */}
 			{/* <UnitRenderer /> */}
 			{/* <EffectRenderer /> */}

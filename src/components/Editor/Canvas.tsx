@@ -41,10 +41,12 @@ const Canvas: React.FC<CanvasProps> = ({
   // Generate grid in the same way as MapRenderer
   const generateGrid = () => {
     const grid: HexCoordinate[][] = [];
-    for (let y = height - 1; y >= 0; y--) {
+    // Start from bottom-left (0,0) and go up
+    for (let y = 0; y < height; y++) {
       const row: HexCoordinate[] = [];
       for (let x = 0; x < width; x++) {
-        row.push(createHexCoordinate(x, y));
+        // Use height-1-y to flip the y-coordinate so 0 is at the bottom
+        row.push(createHexCoordinate(x, height - 1 - y));
       }
       grid.push(row);
     }
@@ -89,6 +91,7 @@ const Canvas: React.FC<CanvasProps> = ({
             y >= cellY && 
             y <= cellY + GridLayout.WIDTH
           ) {
+            // Return the cell coordinates as they are, since they're already in the correct format
             return { x: cell.x, y: cell.y };
           }
         }
@@ -211,6 +214,9 @@ const Canvas: React.FC<CanvasProps> = ({
                 transform: 'translateY(-12.5px)', // Adjust vertical alignment
               }}>
                 {row.map((coordinate) => {
+                  // Access terrain using the correct indices
+                  // The terrain array is [rows][cols], but we need to access it as [y][x]
+                  // The coordinate.y is already flipped in the grid generation
                   const terrainType = terrain[coordinate.y]?.[coordinate.x] || 'plain';
                   return (
                     <div

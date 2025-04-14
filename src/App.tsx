@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Core from './components/Core';
 import Editor from './components/Editor/index';
 import Log from './components/Log';
@@ -37,28 +37,6 @@ const Home: React.FC = () => {
   );
 };
 
-// Editor with stage selection
-const EditorWithStage: React.FC = () => {
-  const navigate = useNavigate();
-  
-  const handleSaveToStage = (stageId: string) => {
-    // Navigate to the editor with the stage ID
-    navigate(`/editor/${stageId}`);
-  };
-  
-  return (
-    <div className="editor-stage-container">
-      <h2>Select a stage to edit</h2>
-      <div className="stage-buttons">
-        <button onClick={() => handleSaveToStage('0001')}>Stage 0001</button>
-        <button onClick={() => handleSaveToStage('0002')}>Stage 0002</button>
-        <button onClick={() => handleSaveToStage('0003')}>Stage 0003</button>
-        <button onClick={() => handleSaveToStage('custom')}>Custom Stage</button>
-      </div>
-    </div>
-  );
-};
-
 const App: React.FC = () => {
   return (
     <Router>
@@ -67,7 +45,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/core" element={<Core />} />
           <Route path="/core/:stageId" element={<Core />} />
-          <Route path="/editor" element={<EditorWithStage />} />
+          <Route path="/editor" element={<Editor />} />
           <Route path="/log" element={<Log />} />
           <Route path="/back" element={<Back />} />
         </Routes>

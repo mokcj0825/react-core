@@ -5,6 +5,8 @@ import { TerrainType } from '../components/Core/gameCore/types/TerrainType';
 export enum UIEventType {
   CELL_HOVER = 'CELL_HOVER',
   CELL_LEAVE = 'CELL_LEAVE',
+  TURN_CHANGE = 'TURN_CHANGE',
+  DAY_NIGHT_CHANGE = 'DAY_NIGHT_CHANGE',
 }
 
 // Event interface for the pub/sub system
@@ -13,6 +15,8 @@ export interface UIEvent {
   payload?: {
     coordinate?: HexCoordinate;
     terrain?: TerrainType;
+    turn?: number;
+    isDay?: boolean;
   };
 }
 

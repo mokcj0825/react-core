@@ -142,14 +142,7 @@ const Canvas: React.FC<CanvasProps> = ({
   return (
     <div 
       ref={canvasRef}
-      style={{ 
-        height: '100%', 
-        width: '100%',
-        position: 'relative',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+      style={canvasStyle}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
@@ -190,17 +183,7 @@ const Canvas: React.FC<CanvasProps> = ({
               }}
             />
           )}
-          <div style={{
-            position: 'absolute',
-            top: ScrollConfig.PADDING,
-            left: ScrollConfig.PADDING,
-            width: mapWidth - (ScrollConfig.PADDING * 2),
-            height: mapHeight - (ScrollConfig.PADDING * 2),
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            boxSizing: 'border-box',
-            margin: 0,
-            padding: 0,
-          }}>
+          <div style={getMapStyle(mapWidth, mapHeight)}>
             {grid.map((row, index) => (
               <div key={index} style={{
                 display: 'flex',
@@ -291,4 +274,27 @@ const Canvas: React.FC<CanvasProps> = ({
   );
 };
 
-export default Canvas; 
+export default Canvas;
+
+const canvasStyle = {
+  height: '100%',
+  width: '100%',
+  position: 'relative',
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+} as const;
+
+const getMapStyle = (mapWidth: number, mapHeight: number) => {
+  return {
+    position: 'absolute',
+    top: ScrollConfig.PADDING,
+    left: ScrollConfig.PADDING,
+    width: mapWidth - (ScrollConfig.PADDING * 2),
+    height: mapHeight - (ScrollConfig.PADDING * 2),
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    boxSizing: 'border-box',
+    margin: 0,
+    padding: 0,
+  } as const;
+}

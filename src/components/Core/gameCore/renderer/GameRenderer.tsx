@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { MapRenderer } from './MapRenderer';
 import BottomBar from '../../../uiComponent/BottomBar';
-
+import TopBar from '../../../uiComponent/TopBar';
 interface StageData {
 	map: string;
 }
@@ -36,6 +36,7 @@ export const GameRenderer: React.FC<GameRendererProps> = ({ stageId }) => {
 			ref={gameRef}
 			style={wrapperStyle}
 		>
+			<TopBar />
 			<MapRenderer mapFile={stageData.map} />
 			<BottomBar />
 			{/* Future renderers will go here */}
@@ -53,7 +54,8 @@ const wrapperStyle = {
 	backgroundColor: '#FFE4C4',
 	userSelect: 'none',
 	display: 'flex',
+	flexDirection: 'column',
 	alignItems: 'center',
-	justifyContent: 'center',
+	justifyContent: 'space-between',
 	overflow: 'hidden'
 } as const;

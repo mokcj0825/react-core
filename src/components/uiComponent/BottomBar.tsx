@@ -74,6 +74,7 @@ const bottomBarStyle: React.CSSProperties = {
   fontSize: 14,
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-start',
+  justifyContent: 'center',
   zIndex: 1000,
+  pointerEvents: 'none',
 };

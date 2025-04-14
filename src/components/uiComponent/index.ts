@@ -1,2 +1,4 @@
 import BottomBar from './BottomBar';
-export default BottomBar; 
+import TopBar from './TopBar';
+
+export { BottomBar, TopBar };   

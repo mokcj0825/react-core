@@ -3,14 +3,17 @@ import { TerrainType } from '../Core/gameCore/types/TerrainType';
 import { createHexCoordinate, HexCoordinate } from '../Core/gameCore/types/HexCoordinate';
 import { GridLayout } from '../Core/gameCore/system-config/GridLayout';
 import { ScrollConfig } from '../Core/gameCore/system-config/ScrollConfig';
+import BackgroundImageRenderer from './canvas-component/BackgroundImageRenderer';
+import HexaCellRenderer from './canvas-component/HexaCellRenderer';
 
-interface CanvasProps {
+interface Props {
   width: number;
   height: number;
   terrain: TerrainType[][];
   selectedTerrain: TerrainType;
   onCellClick: (x: number, y: number) => void;
   backgroundImage: string | null;
+  deployableCells?: { x: number; y: number; index: number }[];
 }
 
 const TERRAIN_COLORS: Record<TerrainType, string> = {
@@ -26,13 +29,14 @@ const TERRAIN_COLORS: Record<TerrainType, string> = {
   swamp: '#A3E4D7',
 };
 
-const Canvas: React.FC<CanvasProps> = ({ 
+const Canvas: React.FC<Props> = ({ 
   width, 
   height, 
   terrain,
   selectedTerrain,
   onCellClick,
-  backgroundImage
+  backgroundImage,
+  deployableCells = []
 }) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -41,12 +45,11 @@ const Canvas: React.FC<CanvasProps> = ({
   // Generate grid in the same way as MapRenderer
   const generateGrid = () => {
     const grid: HexCoordinate[][] = [];
-    // Start from bottom-left (0,0) and go up
+    // Start from top-left and go right, then down
     for (let y = 0; y < height; y++) {
       const row: HexCoordinate[] = [];
       for (let x = 0; x < width; x++) {
-        // Use height-1-y to flip the y-coordinate so 0 is at the bottom
-        row.push(createHexCoordinate(x, height - 1 - y));
+        row.push(createHexCoordinate(x, y));
       }
       grid.push(row);
     }
@@ -150,7 +153,6 @@ const Canvas: React.FC<CanvasProps> = ({
         padding: '16px',
         borderBottom: '1px solid #ccc',
       }}>
-        <h2>Canvas</h2>
         <div>Selected: {selectedTerrain}</div>
         <div>Size: {width} x {height}</div>
       </div>
@@ -168,21 +170,7 @@ const Canvas: React.FC<CanvasProps> = ({
           margin: 0,
           padding: 0,
         }}>
-          {backgroundImage && (
-            <div 
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                zIndex: 0,
-                backgroundImage: `url(${backgroundImage})`,
-                backgroundSize: '100% 100%',
-                backgroundRepeat: 'no-repeat',
-              }}
-            />
-          )}
+          <BackgroundImageRenderer backgroundImage={backgroundImage} />
           <div style={getMapStyle(mapWidth, mapHeight)}>
             {grid.map((row, index) => (
               <div key={index} style={{
@@ -198,71 +186,18 @@ const Canvas: React.FC<CanvasProps> = ({
               }}>
                 {row.map((coordinate) => {
                   // Access terrain using the correct indices
-                  // The terrain array is [rows][cols], but we need to access it as [y][x]
-                  // The coordinate.y is already flipped in the grid generation
+                  // The terrain array is [y][x], so we need to access it as [y][x]
                   const terrainType = terrain[coordinate.y]?.[coordinate.x] || 'plain';
+                  const deployableCell = deployableCells?.find(cell => cell.x === coordinate.x && cell.y === coordinate.y);
                   return (
-                    <div
-                      id={`hex-${coordinate.x}-${coordinate.y}`}
-                      key={`${coordinate.x},${coordinate.y}`}
-                      onMouseDown={(e) => handleMouseDown(e.clientX, e.clientY)}
-                      onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
-                      style={{
-                        width: `${GridLayout.WIDTH}px`,
-                        height: `${GridLayout.WIDTH}px`,
-                        clipPath: 'polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        userSelect: 'none',
-                        fontSize: '12px',
-                        margin: 0,
-                        padding: 0,
-                        boxSizing: 'border-box',
-                        flexShrink: 0,
-                        flexGrow: 0,
-                        position: 'relative',
-                        backgroundColor: TERRAIN_COLORS[terrainType],
-                        zIndex: 1,
-                        opacity: 0.5,
-                      }}
-                    >
-                      {/* Border for better visibility */}
-                      <svg
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          width: '100%',
-                          height: '100%',
-                          pointerEvents: 'none',
-                          zIndex: 2,
-                        }}
-                        viewBox="0 0 100 100"
-                        preserveAspectRatio="none"
-                      >
-                        <path
-                          d="M0 25 L0 75 L50 100 L100 75 L100 25 L50 0 Z"
-                          fill="none"
-                          stroke="#8B4513"
-                          strokeWidth="2"
-                          vectorEffect="non-scaling-stroke"
-                        />
-                      </svg>
-
-                      {/* Coordinate display */}
-                      <div style={{
-                        position: 'absolute',
-                        bottom: '2px',
-                        left: '2px',
-                        fontSize: '10px',
-                        color: 'rgba(0, 0, 0, 0.7)',
-                        zIndex: 3,
-                      }}>
-                        {coordinate.x},{coordinate.y}
-                      </div>
-                    </div>
+                    <HexaCellRenderer
+                      coordinate={coordinate}
+                      terrainColor={TERRAIN_COLORS[terrainType]}
+                      handleMouseDown={handleMouseDown}
+                      handleMouseMove={handleMouseMove}
+                      deployable={!!deployableCell}
+                      deployableIndex={deployableCell?.index}
+                    />
                   );
                 })}
               </div>

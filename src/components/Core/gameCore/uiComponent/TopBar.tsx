@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaPlay, FaPause } from 'react-icons/fa';
-import { eventBus, UIEventType, UIEvent } from '../../events/EventBus';
+import {eventBus, UIEventType} from "../events/EventBus.ts";
 
 const TopBar: React.FC = () => {
     const [turns, setTurns] = useState<number>(0);
@@ -8,13 +8,13 @@ const TopBar: React.FC = () => {
     const [isPaused, setIsPaused] = useState<boolean>(false);
 
     useEffect(() => {
-        const unsubscribeTurn = eventBus.subscribe(UIEventType.TURN_CHANGE, (event: UIEvent) => {
+        const unsubscribeTurn = eventBus.subscribe(UIEventType.TURN_CHANGE, (event) => {
             if (event.payload?.turn !== undefined) {
                 setTurns(event.payload.turn);
             }
         });
 
-        const unsubscribeDayNight = eventBus.subscribe(UIEventType.DAY_NIGHT_CHANGE, (event: UIEvent) => {
+        const unsubscribeDayNight = eventBus.subscribe(UIEventType.DAY_NIGHT_CHANGE, (event) => {
             if (event.payload?.isDay !== undefined) {
                 setIsDay(event.payload.isDay);
             }

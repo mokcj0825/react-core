@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import {Container} from "./Container";
 import {TerrainType} from "../../types/TerrainType";
 import {HighlightType} from "../../types/HighlightType";
-import { UIEventType, eventBus } from "../../../../../events/EventBus";
+import { UIEventType, eventBus } from "../../events/EventBus";
 
 interface Props {
 	terrain: TerrainType,
@@ -68,19 +68,7 @@ export const HexCell: React.FC<Props> = ({
 
 const Overlay: React.FC = () => (
 	<>
-		<div
-			style={{
-				position: 'absolute',
-				top: 0,
-				left: 0,
-				width: '100%',
-				height: '100%',
-				backgroundColor: '#FFFFFF',
-				opacity: 0.2,
-				pointerEvents: 'none',
-				zIndex: 1,
-			}}
-		/>
+		<div style={overlayWrapper}/>
 		<svg
 			style={{
 				position: 'absolute',
@@ -189,19 +177,34 @@ const CellContent: React.FC<{coordinate: HexCoordinate}> = ({
 )
 
 const HoverIndicator: React.FC <{isHovered: boolean; isSelected?: boolean}> = ({isHovered, isSelected = false}) => {
-	return (<div
-		style={{
-			position: 'absolute',
-			top: 0,
-			left: 0,
-			width: '100%',
-			height: '100%',
-			clipPath: 'polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%)',
-			backgroundColor: isHovered ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
-			outline: isSelected ? '2px solid yellow' : 'none',
-			transition: 'all 0.2s ease',
-			pointerEvents: 'none',
-			zIndex: 5,
-		}}
+	return (<div style={getHoverIndicatorBase(isHovered, isSelected)}
 	/>)
+}
+
+const overlayWrapper = {
+	position: 'absolute',
+	top: 0,
+	left: 0,
+	width: '100%',
+	height: '100%',
+	backgroundColor: '#FFFFFF',
+	opacity: 0.2,
+	pointerEvents: 'none',
+	zIndex: 1,
+} as const;
+
+const getHoverIndicatorBase = (isHovered: boolean, isSelected: boolean) => {
+	return {
+	position: 'absolute',
+	top: 0,
+	left: 0,
+	width: '100%',
+	height: '100%',
+	clipPath: 'polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%)',
+	transition: 'all 0.2s ease',
+	pointerEvents: 'none',
+	zIndex: 5,
+	backgroundColor: isHovered ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
+	outline: isSelected ? '2px solid yellow' : 'none',
+} as const;
 }

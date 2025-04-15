@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { TerrainType } from '../Core/gameCore/types/TerrainType';
-import { HexCoordinate } from '../Core/gameCore/types/HexCoordinate';
-import { eventBus, UIEventType } from '../../events/EventBus';
+import { HexCoordinate } from '../types/HexCoordinate';
+import { TerrainType } from '../types/TerrainType';
+import {eventBus, UIEventType} from "../events/EventBus.ts";
+
 
 /**
  * BottomBar component that displays terrain and coordinate information when a cell is hovered.
@@ -35,11 +36,6 @@ const BottomBar: React.FC = () => {
       unsubscribeLeave();
     };
   }, []);
-
-  // Log state changes
-  //useEffect(() => {
-  //  console.log('BottomBar: State updated:', { coordinate, terrain, isOutsideGrid });
-  //}, [coordinate, terrain, isOutsideGrid]);
 
   // Format the coordinate and terrain information
   const formatInfo = (): string => {

@@ -1,5 +1,5 @@
-import { HexCoordinate } from '../components/Core/gameCore/types/HexCoordinate';
-import { TerrainType } from '../components/Core/gameCore/types/TerrainType';
+import { HexCoordinate } from '../types/HexCoordinate.ts';
+import { TerrainType } from '../types/TerrainType.ts';
 
 // Event types for the pub/sub system
 export enum UIEventType {

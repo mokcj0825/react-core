@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { MapRenderer } from './MapRenderer';
-import BottomBar from '../../../uiComponent/BottomBar';
-import TopBar from '../../../uiComponent/TopBar';
+import BottomBar from '../uiComponent/BottomBar';
+import TopBar from '../uiComponent/TopBar';
 interface StageData {
 	map: string;
 }

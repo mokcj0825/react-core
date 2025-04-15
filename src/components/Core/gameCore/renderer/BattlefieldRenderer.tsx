@@ -10,7 +10,7 @@ interface GameRendererProps {
 	stageId: string;
 }
 
-export const GameRenderer: React.FC<GameRendererProps> = ({ stageId }) => {
+export const BattlefieldRenderer: React.FC<GameRendererProps> = ({ stageId }) => {
 	const [stageData, setStageData] = useState<StageData | null>(null);
 	const gameRef = useRef<HTMLDivElement | null>(null);
 

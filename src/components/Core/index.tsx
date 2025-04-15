@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { GameRenderer } from './gameCore/renderer/GameRenderer';
+import { BattlefieldRenderer } from './gameCore/renderer/BattlefieldRenderer.tsx';
 
 const Core: React.FC = () => {
   const { stageId = '0001' } = useParams<{ stageId?: string }>();
@@ -14,7 +14,7 @@ const Core: React.FC = () => {
       left: 0,
       overflow: 'hidden'
     }}>
-      <GameRenderer stageId={stageId} />
+      <BattlefieldRenderer stageId={stageId} />
     </div>
   );
 };

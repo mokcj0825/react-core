@@ -24,7 +24,9 @@ const ImportEditor: React.FC<Props> = ({
 					// where (0,0) is top-left and terrain array is [top row...bottom row]
 					const flippedMapData = {
 						...mapData,
-						terrain: mapData.terrain.slice().reverse()
+						terrain: mapData.terrain.slice().reverse(),
+						// Keep deployable cells as they are, since they're already in the correct coordinate system
+						deployableCells: mapData.deployableCells || []
 					};
 					onLoadMap(flippedMapData);
 				} catch (error) {
@@ -78,9 +80,7 @@ const ImportEditor: React.FC<Props> = ({
 	)
 }
 
-export default ImportEditor;
-
-const saveButtonStyle = {
+export default ImportEditor;const saveButtonStyle = {
 	padding: '12px',
 	border: '1px solid #4CAF50',
 	borderRadius: '8px',
@@ -108,3 +108,4 @@ const loadButtonStyle = {
 	fontWeight: 'bold',
 	textAlign: 'center',
 } as const;
+

@@ -18,6 +18,9 @@ interface PaletteProps {
   onBackgroundImageChange: (imagePath: string) => void;
   terrain: TerrainType[][];
   onLoadMap: (mapData: MapData) => void;
+  isDeployMode: boolean;
+  onToggleDeployMode: () => void;
+  deployableCells: {x: number, y: number, index: number}[];
 }
 
 // Define the map data structure for saving/loading
@@ -26,6 +29,7 @@ export interface MapData {
   height: number;
   terrain: TerrainType[][];
   backgroundImage: string | null | undefined;
+  deployableCells?: {x: number, y: number, index: number}[];
 }
 
 const Palette: React.FC<PaletteProps> = ({ 
@@ -38,14 +42,18 @@ const Palette: React.FC<PaletteProps> = ({
   backgroundImage,
   onBackgroundImageChange,
   terrain,
-  onLoadMap
+  onLoadMap,
+  isDeployMode,
+  onToggleDeployMode,
+  deployableCells
 }) => {
   const handleSaveMap = () => {
     const mapData: MapData = {
       width,
       height,
       terrain: terrain.slice().reverse(),
-      backgroundImage: undefined
+      backgroundImage: undefined,
+      deployableCells
     };
     
     // Convert to JSON string with proper formatting
@@ -108,6 +116,40 @@ const Palette: React.FC<PaletteProps> = ({
             handleSaveMap={handleSaveMap}
             onLoadMap={onLoadMap}
           />
+        </EditorAccordion>
+
+        {/* Deploy Mode Toggle */}
+        <EditorAccordion title="Deploy Mode">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '12px',
+            backgroundColor: isDeployMode ? '#E8F5E9' : '#fff',
+            borderRadius: '8px',
+            border: isDeployMode ? '2px solid #4CAF50' : '1px solid #ccc',
+          }}>
+            <span style={{ 
+              fontWeight: isDeployMode ? 'bold' : 'normal',
+              color: isDeployMode ? '#2E7D32' : '#333',
+            }}>
+              Deploy Mode
+            </span>
+            <button
+              onClick={onToggleDeployMode}
+              style={{
+                padding: '8px 16px',
+                backgroundColor: isDeployMode ? '#4CAF50' : '#f5f5f5',
+                color: isDeployMode ? '#fff' : '#333',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: isDeployMode ? 'bold' : 'normal',
+              }}
+            >
+              {isDeployMode ? 'Active' : 'Inactive'}
+            </button>
+          </div>
         </EditorAccordion>
 
         {/* Terrain Types */}

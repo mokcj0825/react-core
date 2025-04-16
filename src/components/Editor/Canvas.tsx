@@ -188,9 +188,18 @@ const Canvas: React.FC<Props> = ({
                   // Access terrain using the correct indices
                   // The terrain array is [y][x], so we need to access it as [y][x]
                   const terrainType = terrain[coordinate.y]?.[coordinate.x] || 'plain';
-                  const deployableCell = deployableCells?.find(cell => cell.x === coordinate.x && cell.y === coordinate.y);
+                  
+                  // Convert grid coordinates to terrain array coordinates
+                  const terrainY = (height - 1) - coordinate.y;
+                  
+                  // Find deployable cell with matching coordinates
+                  const deployableCell = deployableCells?.find(cell => 
+                    cell.x === coordinate.x && cell.y === terrainY
+                  );
+                  
                   return (
                     <HexaCellRenderer
+                      key={`${coordinate.x},${coordinate.y}`}
                       coordinate={coordinate}
                       terrainColor={TERRAIN_COLORS[terrainType]}
                       handleMouseDown={handleMouseDown}

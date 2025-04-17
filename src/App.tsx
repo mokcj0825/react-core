@@ -14,7 +14,7 @@ const Home: React.FC = () => {
     <div className="home-container">
       <h1 className="home-title">React Core</h1>
       <div className="links-container">
-        <Link to="/core" className="link-card">
+        <Link to="/core/deploy/0002" className="link-card">
           <div className="card-icon">🎮</div>
           <h2>Core</h2>
           <p>Main game component</p>

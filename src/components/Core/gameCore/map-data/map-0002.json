@@ -441,4 +441,47 @@
       "plain"
     ]
   ],
-  "background": "background-0002"}
+  "background": "background-0002",
+"deployableCells": [
+    {
+      "x": 0,
+      "y": 2,
+      "index": 1
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "index": 2
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "index": 3
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "index": 4
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "index": 5
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "index": 6
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "index": 7
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "index": 8
+    }
+  ]
+}

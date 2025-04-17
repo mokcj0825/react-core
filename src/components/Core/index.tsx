@@ -1,10 +1,21 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { BattlefieldRenderer } from './gameCore/renderer/BattlefieldRenderer.tsx';
+import { Outlet, useParams } from 'react-router-dom';
+import { BattlefieldRenderer } from './gameCore/renderer/BattlefieldRenderer';
+import { DeploymentRenderer } from './gameCore/renderer/DeploymentRenderer';
+
+// Battlefield component with stageId parameter
+const Battlefield = () => {
+  const { stageId = '0001' } = useParams<{ stageId?: string }>();
+  return <BattlefieldRenderer stageId={stageId} />;
+};
+
+// Deployment component with stageId parameter
+const Deployment = () => {
+  const { stageId = '0001' } = useParams<{ stageId?: string }>();
+  return <DeploymentRenderer stageId={stageId} />;
+};
 
 const Core: React.FC = () => {
-  const { stageId = '0001' } = useParams<{ stageId?: string }>();
-  
   return (
     <div style={{ 
       width: '100vw', 
@@ -14,7 +25,7 @@ const Core: React.FC = () => {
       left: 0,
       overflow: 'hidden'
     }}>
-      <BattlefieldRenderer stageId={stageId} />
+      <Outlet />
     </div>
   );
 };

@@ -52,7 +52,7 @@ class EventBus {
   }
 
   public publish(event: UIEvent): void {
-    console.log('EventBus publishing event:', event);
+    //console.log('EventBus publishing event:', event);
     const listeners = this.listeners.get(event.type);
     if (listeners) {
       listeners.forEach(callback => callback(event));

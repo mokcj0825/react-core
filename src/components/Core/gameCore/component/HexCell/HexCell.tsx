@@ -8,14 +8,14 @@ import { UIEventType, eventBus } from "../../events/EventBus";
 interface Props {
 	terrain: TerrainType,
 	coordinate: HexCoordinate,
-	highlight?: HighlightType,
+	highlight?: HighlightType | undefined,
 	fraction?: string,
 }
 
 export const HexCell: React.FC<Props> = ({
 	                                         terrain,
 	                                         coordinate,
-	                                         highlight,
+	                                         highlight=undefined,
 	                                         fraction = 'player',
                                          }) => {
 
@@ -24,6 +24,7 @@ export const HexCell: React.FC<Props> = ({
 	const getHighlightType = (): HighlightType | undefined => {
 		if (highlight === 'selection') return 'selection';
 		if (highlight === 'effect') return 'effect';
+		if (highlight === 'deployable') return 'deployable';
 		//if (isMoveable) return 'moveable';
 		//if (isInZOC) return 'zoc';
 		return undefined;
@@ -125,6 +126,11 @@ const Highlight: React.FC<{
 				return {
 					backgroundColor: 'rgba(255, 165, 0, 0.2)',
 					border: '2px solid rgba(255, 165, 0, 0.4)'
+				};
+			case 'deployable':
+				return {
+					backgroundColor: 'rgba(0, 0, 255, 0.2)',
+					border: '2px solid rgba(0, 0, 255, 0.4)'
 				};
 			default:
 				return {};

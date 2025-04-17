@@ -20,32 +20,18 @@ export class BackgroundRenderer {
       return this.loadedBackgrounds.get(mapId) || null;
     }
     
+    // Try to import the image directly
     try {
       // Check if the backgroundPath already includes an extension
       const hasExtension = /\.(jpg|jpeg|png|gif|webp)$/i.test(backgroundPath);
       const pathWithExtension = hasExtension ? backgroundPath : `${backgroundPath}`;
       
-      // Try to import the image directly
-      try {
-        // Updated path to match the actual directory structure
-        const imageModule = await import(`../../../../assets/maps/background/${pathWithExtension}.jpg`);
-        
-        // Cache the URL
-        this.loadedBackgrounds.set(mapId, imageModule.default);
-        return imageModule.default;
-      } catch (importError) {
-        console.error(`Failed to import image:`, importError);
-        
-        // Fallback to URL approach with updated path
-        const imageUrl = new URL(
-          `../../../assets/maps/background/${pathWithExtension}`,
-          import.meta.url
-        ).href;
-        
-        // Cache the URL
-        this.loadedBackgrounds.set(mapId, imageUrl);
-        return imageUrl;
-      }
+      // Use the public path for the background
+      const imageUrl = `/background/${pathWithExtension}.jpg`;
+      
+      // Cache the URL
+      this.loadedBackgrounds.set(mapId, imageUrl);
+      return imageUrl;
     } catch (error) {
       console.error(`Failed to load background for map: ${mapId}`, error);
       return null;

@@ -4,12 +4,17 @@ import {Container} from "./Container";
 import {TerrainType} from "../../../types/TerrainType";
 import {HighlightType} from "../../../types/HighlightType";
 import { UIEventType, eventBus } from "../../../events/EventBus";
+import {DeploymentCharacter} from "../../../types/DeploymentCharacter";
 
 interface Props {
 	terrain: TerrainType,
 	coordinate: HexCoordinate,
 	highlight?: HighlightType | undefined,
 	fraction?: string,
+	onDragOver?: (e: React.DragEvent) => void,
+	onDrop?: (e: React.DragEvent) => void,
+	deployedUnit?: DeploymentCharacter | null,
+	onRightClick?: (coordinate: HexCoordinate, unit: DeploymentCharacter) => void,
 }
 
 export const HexCell: React.FC<Props> = ({
@@ -17,6 +22,10 @@ export const HexCell: React.FC<Props> = ({
 	                                         coordinate,
 	                                         highlight=undefined,
 	                                         fraction = 'player',
+	                                         onDragOver,
+	                                         onDrop,
+	                                         deployedUnit,
+	                                         onRightClick,
                                          }) => {
 
 	const [isHovered, setIsHovered] = useState(false);
@@ -50,6 +59,29 @@ export const HexCell: React.FC<Props> = ({
 		});
 	};
 
+	const handleDragOver = (e: React.DragEvent) => {
+		if (highlight === 'deployable') {
+			e.preventDefault();
+			e.stopPropagation();
+			onDragOver?.(e);
+		}
+	};
+
+	const handleDrop = (e: React.DragEvent) => {
+		if (highlight === 'deployable') {
+			e.preventDefault();
+			e.stopPropagation();
+			onDrop?.(e);
+		}
+	};
+
+	const handleContextMenu = (e: React.MouseEvent) => {
+		e.preventDefault();
+		if (deployedUnit && onRightClick) {
+			onRightClick(coordinate, deployedUnit);
+		}
+	};
+
 	return (
 		<>
 			<Container 
@@ -57,12 +89,24 @@ export const HexCell: React.FC<Props> = ({
 				isHovered={isHovered}
 				onMouseEnter={handleMouseEnter}
 				onMouseLeave={handleMouseLeave}
+				onDragOver={handleDragOver}
+				onDrop={handleDrop}
+				onContextMenu={handleContextMenu}
 			>
 				<Overlay />
 				<Highlight highlightType={getHighlightType()}
 				           fraction={fraction} />
 				<CellContent coordinate={coordinate}/>
 				<HoverIndicator isHovered={isHovered} />
+				{deployedUnit && (
+					<div style={deployedUnitStyle}>
+						<img 
+							src={`/sprites/${deployedUnit.sprite}.svg`}
+							alt={deployedUnit.name}
+							style={deployedUnitSpriteStyle}
+						/>
+					</div>
+				)}
 				<div>{terrain}</div>
 			</Container>
 		</>
@@ -217,3 +261,22 @@ const getHoverIndicator = (isHovered: boolean, isSelected: boolean) => {
 		outline: isSelected ? '2px solid yellow' : 'none',
 	} as const;
 }
+
+const deployedUnitStyle = {
+	position: 'absolute',
+	top: 0,
+	left: 0,
+	width: '100%',
+	height: '100%',
+	display: 'flex',
+	alignItems: 'center',
+	justifyContent: 'center',
+	pointerEvents: 'none',
+	zIndex: 4,
+} as const;
+
+const deployedUnitSpriteStyle = {
+	width: '60%',
+	height: '60%',
+	objectFit: 'contain' as const,
+} as const;

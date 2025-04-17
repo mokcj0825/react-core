@@ -2,34 +2,47 @@ import React, { useEffect, useState, useRef } from 'react';
 import { MapRenderer } from './MapRenderer';
 import BottomBar from '../uiComponent/BottomBar';
 import TopBar from '../uiComponent/TopBar';
-interface StageData {
-	map: string;
+import { DeploymentCharacter } from '../types/DeploymentCharacter';
+
+interface DeploymentData {
+	stageId: string;
+	deployableCells: { x: number; y: number; index: number }[];
+	deployedUnits: (DeploymentCharacter & { position: { x: number; y: number } })[];
 }
 
-interface GameRendererProps {
+interface Props {
 	stageId: string;
 }
 
-export const BattlefieldRenderer: React.FC<GameRendererProps> = ({ stageId }) => {
-	const [stageData, setStageData] = useState<StageData | null>(null);
+export const BattlefieldRenderer: React.FC<Props> = ({ stageId }) => {
+	const [deploymentData, setDeploymentData] = useState<DeploymentData | null>(null);
 	const gameRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
-		const loadStageData = async () => {
+		const loadDeploymentData = () => {
 			try {
-				const stage = await import(`../stage-data/stage-${stageId}.json`);
-				setStageData(stage);
+				const storedData = localStorage.getItem(`deployment_${stageId}`);
+				if (storedData) {
+					const data = JSON.parse(storedData) as DeploymentData;
+					setDeploymentData(data);
+					// Clear the deployment data after loading it
+					localStorage.removeItem(`deployment_${stageId}`);
+				} else {
+					console.error('No deployment data found for stage:', stageId);
+				}
 			} catch (error) {
-				console.error('Failed to load stage data:', error);
+				console.error('Failed to load deployment data:', error);
 			}
 		};
 
-		loadStageData();
+		loadDeploymentData();
 	}, [stageId]);
 
-	if (!stageData) {
+	if (!deploymentData) {
 		return <div>Loading game...</div>;
 	}
+
+	console.log('Deployment data loaded:', deploymentData);
 
 	return (
 		<div 
@@ -37,10 +50,10 @@ export const BattlefieldRenderer: React.FC<GameRendererProps> = ({ stageId }) =>
 			style={wrapperStyle}
 		>
 			<TopBar />
-			<MapRenderer mapFile={stageData.map} />
+			<MapRenderer mapFile={`map-${stageId}`} />
 			<BottomBar />
 			{/* Future renderers will go here */}
-			{/* <UnitRenderer /> */}
+			{/* <UnitRenderer units={deploymentData.deployedUnits} /> */}
 			{/* <EffectRenderer /> */}
 			{/* <UIRenderer /> */}
 		</div>

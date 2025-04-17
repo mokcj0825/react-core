@@ -8,36 +8,42 @@ interface Props {
 	children: React.ReactNode;
 	onMouseEnter?: () => void;
 	onMouseLeave?: () => void;
+	onDragOver?: (e: React.DragEvent) => void;
+	onDrop?: (e: React.DragEvent) => void;
+	onContextMenu?: (e: React.MouseEvent) => void;
 }
-
-const GRID = {
-	WIDTH: 100
-};
 
 export const Container: React.FC<Props> = ({
 	terrain,
 	isHovered,
 	children,
 	onMouseEnter,
-	onMouseLeave
+	onMouseLeave,
+	onDragOver,
+	onDrop,
+	onContextMenu
 }) => {
 	const isSelected = false;
 
 	const onClick = () => {console.log('Mouse clicked a hex cell with terrain ', terrain)}
-	//const onContextMenu = () => {console.log('Not implemented')}
 
 	return (
 		<div style={getContainerStyle(isSelected, isHovered)}
 		     onClick={onClick}
-		     onContextMenu={onClick}
+		     onContextMenu={onContextMenu}
 		     onMouseEnter={onMouseEnter}
 		     onMouseLeave={onMouseLeave}
+		     onDragOver={onDragOver}
+		     onDrop={onDrop}
 		>
 			{children}
 		</div>
 	)
 }
 
+const GRID = {
+	WIDTH: 100
+};
 
 const getContainerStyle = (isSelected: boolean, isHovered: boolean) => {
 	return {

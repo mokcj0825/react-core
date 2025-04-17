@@ -9,6 +9,7 @@ import { HighlightType } from '../types/HighlightType';
 import { BackgroundRenderer } from './BackgroundRenderer';
 import { CharacterRenderer } from './CharacterRenderer';
 import { DeploymentCharacter } from '../types/DeploymentCharacter';
+import { useNavigate } from 'react-router-dom';
 
 // Character data interface
 
@@ -45,9 +46,11 @@ interface Props {
 export const DeploymentRenderer: React.FC<Props> = ({ stageId }) => {
   const [mapData, setMapData] = useState<MapData | null>(null);
   const [selectedCharacter, setSelectedCharacter] = useState<number | null>(null);
+  // @ts-ignore
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [backgroundLoaded, setBackgroundLoaded] = useState(false);
   const [spriteAnimations, setSpriteAnimations] = useState<Record<number, boolean>>({});
+  const navigate = useNavigate();
 
 // Add these state variables to DeploymentRenderer
 const [draggedCharacter, setDraggedCharacter] = useState<DeploymentCharacter | null>(null);
@@ -60,13 +63,10 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
         const map = await import(`../map-data/map-${stageId}.json`);
         console.log(`Loaded map data for ${stageId}:`, map);
         setMapData(map);
-        
-        // Load background if specified
+
         if (map.background) {
-          console.log(`Map ${stageId} has background: ${map.background}`);
           await BackgroundRenderer.loadBackground(stageId, map.background);
           setBackgroundLoaded(true);
-          console.log(`Background loaded for map ${stageId}`);
         }
       } catch (error) {
         console.error('Failed to load map data:', error);
@@ -78,58 +78,44 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
 
   // Add these handlers to DeploymentRenderer
   const handleDragStart = (character: DeploymentCharacter) => {
-    // Only allow dragging if the character is not already deployed
     if (!Object.values(deployedUnits).some(unit => unit.id === character.id)) {
       setDraggedCharacter(character);
     }
   };
 
-  const handleCellDragOver = (e: React.DragEvent, x: number, y: number) => {
+  // @ts-ignore
+  const handleDragOver = (e: React.DragEvent, coordinate: HexCoordinate) => {
     e.preventDefault();
-    // Only allow dropping on deployable cells
-    if (isDeployableCell(x, y)) {
-      e.dataTransfer.dropEffect = 'move';
-    } else {
-      e.dataTransfer.dropEffect = 'none';
-    }
+    e.stopPropagation();
   };
-  
-  const handleCellDrop = (e: React.DragEvent, x: number, y: number) => {
+
+  const handleDrop = (e: React.DragEvent, coordinate: HexCoordinate) => {
     e.preventDefault();
+    e.stopPropagation();
     
-    // Check if the cell is deployable
-    if (!isDeployableCell(x, y)) return;
+    if (!draggedCharacter) return;
     
-    const cellKey = `${x},${y}`;
-    
-    // Check if the cell already has a unit
-    if (deployedUnits[cellKey]) {
-      // If the cell has a unit, check if it's the same as the dragged unit
-      if (draggedCharacter && deployedUnits[cellKey].id === draggedCharacter.id) {
-        // Withdraw the unit
-        const newDeployedUnits = { ...deployedUnits };
-        delete newDeployedUnits[cellKey];
-        setDeployedUnits(newDeployedUnits);
-      }
-      return;
-    }
-    
-    // Deploy the unit to the cell
-    if (draggedCharacter) {
-      setDeployedUnits({
-        ...deployedUnits,
-        [cellKey]: draggedCharacter
-      });
-    }
+    const cellKey = `${coordinate.x},${coordinate.y}`;
+    setDeployedUnits(prev => ({
+      ...prev,
+      [cellKey]: draggedCharacter
+    }));
+    setDraggedCharacter(null);
   };
-  
-  // Helper function to check if a cell is deployable
-  const isDeployableCell = (x: number, y: number): boolean => {
-    return mapData?.deployableCells?.some(cell => cell.x === x && cell.y === y) || false;
-  };
-  
+
   const handleDragEnd = () => {
     setDraggedCharacter(null);
+  };
+
+  // @ts-ignore
+  const handleRightClick = (coordinate: HexCoordinate, unit: DeploymentCharacter) => {
+    const cellKey = `${coordinate.x},${coordinate.y}`;
+
+    setDeployedUnits(prev => {
+      const newDeployedUnits = { ...prev };
+      delete newDeployedUnits[cellKey];
+      return newDeployedUnits;
+    });
   };
 
   // Memoized character selection handler
@@ -151,10 +137,28 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
     }, CHARACTER_SPRITE_CONFIG.animation.duration);
   }, []);
 
-  // Memoized cell click handler
-  //const handleCellClick = useCallback((x: number, y: number) => {
-  //  console.log('Clicked deployable cell:', x, y);
-  //}, []);
+  const handleStartBattle = useCallback(() => {
+    // Create deployment data object
+    const deploymentData = {
+      stageId,
+      deployableCells: mapData?.deployableCells?.map(cell => ({
+        x: cell.x,
+        y: cell.y,
+        index: cell.index
+      })) || [],
+      deployedUnits: Object.entries(deployedUnits).map(([key, unit]) => {
+        const [x, y] = key.split(',').map(Number);
+        return {
+          ...unit,
+          position: { x, y }
+        };
+      })
+    };
+
+    localStorage.setItem(`deployment_${stageId}`, JSON.stringify(deploymentData));
+
+    navigate(`/core/battlefield/${stageId}`);
+  }, [stageId, deployedUnits, navigate, mapData]);
 
   if (!mapData) {
     return <div>Loading map...</div>;
@@ -178,8 +182,17 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
               isAnimating={!!spriteAnimations[character.id]}
               onClick={handleCharacterClick}
               animationConfig={CHARACTER_SPRITE_CONFIG.animation}
+              onDragStart={() => handleDragStart(character)}
+              onDragEnd={handleDragEnd}
+              isDeployed={Object.values(deployedUnits).some(unit => unit.id === character.id)}
             />
           ))}
+          <button 
+            onClick={handleStartBattle}
+            style={startButtonStyle}
+          >
+            开始战斗
+          </button>
         </div>
       </div>
       <div style={mapContainerStyle}>
@@ -208,12 +221,19 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
                 const deployableCell = deployableCells.find(
                   cell => cell.x === coordinate.x && cell.y === coordinate.y
                 );
+                const cellKey = `${coordinate.x},${coordinate.y}`;
+                const deployedUnit = deployedUnits[cellKey];
+                
                 return (
                   <GridRenderer
-                    key={`${coordinate.x},${coordinate.y}`}
+                    key={cellKey}
                     coordinate={coordinate}
                     terrain={terrain[coordinate.y][coordinate.x]}
                     highlight={deployableCell ? 'deployable' as HighlightType : undefined}
+                    onDragOver={(e) => handleDragOver(e, coordinate)}
+                    onDrop={(e) => handleDrop(e, coordinate)}
+                    deployedUnit={deployedUnit}
+                    onRightClick={handleRightClick}
                   />
                 );
               })}
@@ -294,3 +314,20 @@ const gridStyle = (height: number, index: number) => ({
   marginLeft: (height - 1 - index) % 2 === 0 ? `${GridLayout.ROW_OFFSET}px` : '0',
   marginTop: index === 0 ? '0' : '-25px'
 });
+
+const startButtonStyle = {
+  marginTop: '16px',
+  padding: '8px 16px',
+  backgroundColor: '#4CAF50',
+  color: 'white',
+  border: 'none',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  fontSize: '16px',
+  fontWeight: 'bold' as const,
+  width: '100%',
+  transition: 'background-color 0.2s',
+  ':hover': {
+    backgroundColor: '#45a049'
+  }
+};

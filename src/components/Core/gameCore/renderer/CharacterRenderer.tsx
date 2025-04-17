@@ -1,12 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { DeploymentCharacter } from '../types/DeploymentCharacter';
 
 interface Props {
-  character: {
-    id: number;
-    name: string;
-    sprite: string;
-  };
+  character: DeploymentCharacter;
   isSelected: boolean;
   isAnimating: boolean;
   onClick: (characterId: number) => void;
@@ -32,20 +28,35 @@ export const CharacterRenderer: React.FC<Props> = ({
   onDragEnd,
   isDeployed = false
 }) => {
+  const spriteRef = useRef<HTMLImageElement>(null);
+
+  const handleDragStart = (e: React.DragEvent) => {
+    if (onDragStart) {
+      onDragStart(character);
+      
+      // Set the drag image to be just the sprite
+      if (spriteRef.current) {
+        e.dataTransfer.setDragImage(spriteRef.current, 24, 24);
+      }
+    }
+  };
 
   return (
     <div
       onClick={() => onClick(character.id)}
       draggable={!isDeployed}
-      onDragStart={() => onDragStart?.(character)}
+      onDragStart={handleDragStart}
       onDragEnd={() => onDragEnd?.()}
       style={{
         ...characterCardStyle,
-        backgroundColor: isSelected ? '#E8F5E9' : '#fff'
+        backgroundColor: isSelected ? '#E8F5E9' : '#fff',
+        opacity: isDeployed ? 0.7 : 1,
+        cursor: isDeployed ? 'not-allowed' : 'pointer'
       }}
     >
       <div style={characterSpriteContainerStyle}>
         <img 
+          ref={spriteRef}
           src={`/sprites/${character.sprite}.svg`}
           alt={character.name}
           style={{
@@ -61,9 +72,20 @@ export const CharacterRenderer: React.FC<Props> = ({
             e.currentTarget.parentElement!.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background-color:#e0e0e0;color:#666;font-size:10px;">Missing</div>';
           }}
         />
+        {isDeployed && (
+          <div style={deployedIndicatorStyle}>
+            ✓
+          </div>
+        )}
       </div>
       <div style={characterInfoStyle}>
-        <div style={characterNameStyle}>{character.name}</div>
+        <div style={{
+          ...characterNameStyle,
+          color: isDeployed ? '#888' : '#000',
+          fontWeight: isDeployed ? 'normal' : 'bold'
+        }}>
+          {character.name}
+        </div>
       </div>
     </div>
   );
@@ -80,27 +102,43 @@ const characterCardStyle = {
     transition: 'background-color 0.2s ease'
   };
 
-  const characterSpriteContainerStyle = {
+const characterSpriteContainerStyle = {
     width: '48px',
     height: '48px',
     marginRight: '12px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden'
+    position: 'relative' as const
   };
 
-  const characterSpriteStyle = {
+const characterSpriteStyle = {
     width: '100%',
     height: '100%',
     objectFit: 'contain' as const
   };
 
-  const characterInfoStyle = {
+const characterInfoStyle = {
     flex: 1
   };
 
-  const characterNameStyle = {
-    fontWeight: 'bold',
-    fontSize: '14px'
+const characterNameStyle = {
+    fontSize: '14px',
+    fontWeight: 'bold' as const
+  };
+
+const deployedIndicatorStyle = {
+    position: 'absolute' as const,
+    top: 0,
+    right: 0,
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    borderRadius: '50%',
+    width: '20px',
+    height: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '12px',
+    fontWeight: 'bold' as const
   };

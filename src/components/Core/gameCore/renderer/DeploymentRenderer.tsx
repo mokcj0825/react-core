@@ -3,20 +3,17 @@ import { TerrainType } from '../types/TerrainType';
 import { createHexCoordinate, HexCoordinate } from '../types/HexCoordinate';
 import { GridLayout } from '../system-config/GridLayout';
 import { ScrollConfig } from '../system-config/ScrollConfig';
-import { GridRenderer } from './GridRenderer';
+import { GridRenderer } from "./deployment/GridRenderer.tsx";
 import { Position } from './map-utils';
 import { HighlightType } from '../types/HighlightType';
 import { BackgroundRenderer } from './BackgroundRenderer';
+import { CharacterRenderer } from './CharacterRenderer';
+import { DeploymentCharacter } from '../types/DeploymentCharacter';
 
 // Character data interface
-interface Character {
-  id: number;
-  name: string;
-  sprite: string;
-}
 
 // Static character list
-const PLAYABLE_CHARACTERS: Character[] = [
+const PLAYABLE_CHARACTERS: DeploymentCharacter[] = [
   { id: 1, name: '测试单位1', sprite: 'archer' },
   { id: 2, name: '测试单位2', sprite: 'healer' },
   { id: 3, name: '测试单位3', sprite: 'mage' },
@@ -52,6 +49,10 @@ export const DeploymentRenderer: React.FC<Props> = ({ stageId }) => {
   const [backgroundLoaded, setBackgroundLoaded] = useState(false);
   const [spriteAnimations, setSpriteAnimations] = useState<Record<number, boolean>>({});
 
+// Add these state variables to DeploymentRenderer
+const [draggedCharacter, setDraggedCharacter] = useState<DeploymentCharacter | null>(null);
+const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentCharacter>>({});
+
   // Load map data when stageId changes
   useEffect(() => {
     const loadMapData = async () => {
@@ -74,6 +75,62 @@ export const DeploymentRenderer: React.FC<Props> = ({ stageId }) => {
 
     loadMapData();
   }, [stageId]);
+
+  // Add these handlers to DeploymentRenderer
+  const handleDragStart = (character: DeploymentCharacter) => {
+    // Only allow dragging if the character is not already deployed
+    if (!Object.values(deployedUnits).some(unit => unit.id === character.id)) {
+      setDraggedCharacter(character);
+    }
+  };
+
+  const handleCellDragOver = (e: React.DragEvent, x: number, y: number) => {
+    e.preventDefault();
+    // Only allow dropping on deployable cells
+    if (isDeployableCell(x, y)) {
+      e.dataTransfer.dropEffect = 'move';
+    } else {
+      e.dataTransfer.dropEffect = 'none';
+    }
+  };
+  
+  const handleCellDrop = (e: React.DragEvent, x: number, y: number) => {
+    e.preventDefault();
+    
+    // Check if the cell is deployable
+    if (!isDeployableCell(x, y)) return;
+    
+    const cellKey = `${x},${y}`;
+    
+    // Check if the cell already has a unit
+    if (deployedUnits[cellKey]) {
+      // If the cell has a unit, check if it's the same as the dragged unit
+      if (draggedCharacter && deployedUnits[cellKey].id === draggedCharacter.id) {
+        // Withdraw the unit
+        const newDeployedUnits = { ...deployedUnits };
+        delete newDeployedUnits[cellKey];
+        setDeployedUnits(newDeployedUnits);
+      }
+      return;
+    }
+    
+    // Deploy the unit to the cell
+    if (draggedCharacter) {
+      setDeployedUnits({
+        ...deployedUnits,
+        [cellKey]: draggedCharacter
+      });
+    }
+  };
+  
+  // Helper function to check if a cell is deployable
+  const isDeployableCell = (x: number, y: number): boolean => {
+    return mapData?.deployableCells?.some(cell => cell.x === x && cell.y === y) || false;
+  };
+  
+  const handleDragEnd = () => {
+    setDraggedCharacter(null);
+  };
 
   // Memoized character selection handler
   const handleCharacterClick = useCallback((characterId: number) => {
@@ -114,37 +171,14 @@ export const DeploymentRenderer: React.FC<Props> = ({ stageId }) => {
         <h3 style={panelTitleStyle}>战前部署阶段</h3>
         <div style={characterListStyle}>
           {PLAYABLE_CHARACTERS.map(character => (
-            <div
+            <CharacterRenderer
               key={character.id}
-              onClick={() => handleCharacterClick(character.id)}
-              style={{
-                ...characterCardStyle,
-                backgroundColor: selectedCharacter === character.id ? '#E8F5E9' : '#fff'
-              }}
-            >
-              <div style={characterSpriteContainerStyle}>
-                <img 
-                src={`/sprites/${character.sprite}.svg`}
-                  alt={character.name}
-                  style={{
-                    ...characterSpriteStyle,
-                    transform: spriteAnimations[character.id] 
-                      ? `scale(${CHARACTER_SPRITE_CONFIG.animation.scale})` 
-                      : 'scale(1)',
-                    transition: `transform ${CHARACTER_SPRITE_CONFIG.animation.duration}ms ease-in-out`
-                  }}
-                  onError={(e) => {
-                    console.error(`Failed to load sprite for ${character.sprite}`);
-                    // Set a fallback image or show a placeholder
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.parentElement!.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background-color:#e0e0e0;color:#666;font-size:10px;">Missing</div>';
-                  }}
-                />
-              </div>
-              <div style={characterInfoStyle}>
-                <div style={characterNameStyle}>{character.name}</div>
-              </div>
-            </div>
+              character={character}
+              isSelected={selectedCharacter === character.id}
+              isAnimating={!!spriteAnimations[character.id]}
+              onClick={handleCharacterClick}
+              animationConfig={CHARACTER_SPRITE_CONFIG.animation}
+            />
           ))}
         </div>
       </div>
@@ -230,43 +264,6 @@ const characterListStyle = {
   display: 'flex',
   flexDirection: 'column' as const,
   gap: '8px'
-};
-
-const characterCardStyle = {
-  padding: '12px',
-  border: '1px solid #ccc',
-  borderRadius: '8px',
-  cursor: 'pointer',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  transition: 'all 0.2s'
-};
-
-const characterSpriteContainerStyle = {
-  width: '48px',
-  height: '48px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginRight: '12px',
-  overflow: 'hidden'
-};
-
-const characterSpriteStyle = {
-  width: '100%',
-  height: '100%',
-  objectFit: 'contain' as const
-};
-
-const characterInfoStyle = {
-  display: 'flex',
-  flexDirection: 'column' as const,
-  flex: 1
-};
-
-const characterNameStyle = {
-  fontWeight: 'bold' as const
 };
 
 const mapContainerStyle = {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Body -->
+  <rect x="24" y="16" width="16" height="32" fill="#4B0082" />
+  <!-- Head -->
+  <circle cx="32" cy="12" r="8" fill="#FFD700" />
+  <!-- Staff -->
+  <rect x="40" y="12" width="4" height="32" fill="#8B4513" />
+  <!-- Magic Orb -->
+  <circle cx="42" cy="12" r="6" fill="#4169E1" />
+  <!-- Magic Effects -->
+  <path d="M42,6 Q46,2 50,6" stroke="#FF69B4" stroke-width="2" fill="none" />
+  <path d="M42,6 Q38,2 34,6" stroke="#FF69B4" stroke-width="2" fill="none" />
+</svg> 

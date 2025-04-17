@@ -1,6 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Core from './components/Core';
+import Battlefield from './components/Core/Battlefield';
+import Deployment from './components/Core/Deployment';
 import Editor from './components/Editor/index';
 import Log from './components/Log';
 import Back from './components/Back';
@@ -43,8 +45,13 @@ const App: React.FC = () => {
       <div className="app-container">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/core" element={<Core />} />
-          <Route path="/core/:stageId" element={<Core />} />
+          <Route path="/core" element={<Core />}>
+            <Route path="battlefield/:stageId" element={<Battlefield />} />
+            <Route path="deploy/:stageId" element={<Deployment />} />
+            <Route path="battlefield" element={<Navigate to="battlefield/0001" replace />} />
+            <Route path="deploy" element={<Navigate to="deploy/0001" replace />} />
+            <Route path="" element={<Navigate to="battlefield/0001" replace />} />
+          </Route>
           <Route path="/editor" element={<Editor />} />
           <Route path="/log" element={<Log />} />
           <Route path="/back" element={<Back />} />

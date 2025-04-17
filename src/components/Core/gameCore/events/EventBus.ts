@@ -1,5 +1,5 @@
-import { HexCoordinate } from '../components/Core/gameCore/types/HexCoordinate';
-import { TerrainType } from '../components/Core/gameCore/types/TerrainType';
+import { HexCoordinate } from '../types/HexCoordinate.ts';
+import { TerrainType } from '../types/TerrainType.ts';
 
 // Event types for the pub/sub system
 export enum UIEventType {
@@ -52,7 +52,7 @@ class EventBus {
   }
 
   public publish(event: UIEvent): void {
-    console.log('EventBus publishing event:', event);
+    //console.log('EventBus publishing event:', event);
     const listeners = this.listeners.get(event.type);
     if (listeners) {
       listeners.forEach(callback => callback(event));

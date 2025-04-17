@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { MapRenderer } from './MapRenderer';
-import BottomBar from '../../../uiComponent/BottomBar';
-import TopBar from '../../../uiComponent/TopBar';
+import BottomBar from '../uiComponent/BottomBar';
+import TopBar from '../uiComponent/TopBar';
 interface StageData {
 	map: string;
 }
@@ -10,7 +10,7 @@ interface GameRendererProps {
 	stageId: string;
 }
 
-export const GameRenderer: React.FC<GameRendererProps> = ({ stageId }) => {
+export const BattlefieldRenderer: React.FC<GameRendererProps> = ({ stageId }) => {
 	const [stageData, setStageData] = useState<StageData | null>(null);
 	const gameRef = useRef<HTMLDivElement | null>(null);
 

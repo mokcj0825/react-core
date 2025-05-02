@@ -27,9 +27,11 @@ interface MapData {
  * Props for the MapRenderer component.
  * @interface Props
  * @property {string} mapFile - The filename of the map data to load (without extension)
+ * @property {function} onMapUpdate - Callback function to report map updates
  */
 interface Props {
   mapFile: string;
+  onMapUpdate?: (position: { x: number; y: number }, dimensions: { width: number; height: number }) => void;
 }
 
 /**
@@ -50,7 +52,7 @@ interface Props {
  * @example
  * <MapRenderer mapFile="map-0001" />
  */
-export const MapRenderer: React.FC<Props> = ({ mapFile }) => {
+export const MapRenderer: React.FC<Props> = ({ mapFile, onMapUpdate }) => {
   const [mapData, setMapData] = useState<MapData | null>(null);
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [backgroundLoaded, setBackgroundLoaded] = useState(false);
@@ -91,6 +93,16 @@ export const MapRenderer: React.FC<Props> = ({ mapFile }) => {
       }
     };
   }, [mapFile]);
+
+  useEffect(() => {
+    if (onMapUpdate && mapData) {
+      const dimensions = {
+        width: mapData.width * GridLayout.WIDTH + ScrollConfig.PADDING * 2,
+        height: mapData.height * GridLayout.WIDTH * 0.75 + ScrollConfig.PADDING * 2
+      };
+      onMapUpdate(position, dimensions);
+    }
+  }, [position, mapData, onMapUpdate]);
 
   if (!mapData) {
     return <div>Loading map...</div>;

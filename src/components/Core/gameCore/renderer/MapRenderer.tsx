@@ -7,6 +7,7 @@ import { GridLayout } from '../system-config/GridLayout';
 import { MapBorder } from '../component/MapBorder';
 import { calculateNewPosition, Position, ScrollDirection } from "./map-utils";
 import { BackgroundRenderer } from './BackgroundRenderer';
+import {Origin2D, Vector2D} from "../../../Editor/utils/Vector2D.ts";
 
 /**
  * Represents the map data structure loaded from JSON files.
@@ -27,9 +28,13 @@ interface MapData {
  * Props for the MapRenderer component.
  * @interface Props
  * @property {string} mapFile - The filename of the map data to load (without extension)
+ * @property {function} onMapUpdate - Callback function to report map updates
+ * @property {React.ReactNode} children - Optional children to render inside the map
  */
 interface Props {
   mapFile: string;
+  onMapUpdate?: (position: Vector2D, dimensions: Vector2D) => void;
+  children?: React.ReactNode;
 }
 
 /**
@@ -50,21 +55,27 @@ interface Props {
  * @example
  * <MapRenderer mapFile="map-0001" />
  */
-export const MapRenderer: React.FC<Props> = ({ mapFile }) => {
+export const MapRenderer: React.FC<Props> = ({ mapFile, onMapUpdate, children }) => {
   const [mapData, setMapData] = useState<MapData | null>(null);
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  const [position, setPosition] = useState<Position>(Origin2D);
   const [backgroundLoaded, setBackgroundLoaded] = useState(false);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const scrollInterval = useRef<number | null>(null);
 
   /**
    * Loads map data from a JSON file.
-   * The file should be located in the map-data directory.
+   * The file should be located in the public directory.
    * @async
    */
   const loadMapData = async () => {
     try {
-      const map = await import(`../map-data/${mapFile}.json`);
+      // Load map data from public directory instead of importing
+      const response = await fetch(`/map-data/${mapFile}.json`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch map data for ${mapFile}: ${response.statusText}`);
+      }
+      
+      const map = await response.json();
       console.log(`Loaded map data for ${mapFile}:`, map);
       setMapData(map);
       
@@ -92,13 +103,23 @@ export const MapRenderer: React.FC<Props> = ({ mapFile }) => {
     };
   }, [mapFile]);
 
+  useEffect(() => {
+    if (onMapUpdate && mapData) {
+      const dimensions = {
+        x: mapData.width * GridLayout.WIDTH + ScrollConfig.PADDING * 2,
+        y: mapData.height * GridLayout.WIDTH * 0.75 + ScrollConfig.PADDING * 2
+      };
+      onMapUpdate(position, dimensions);
+    }
+  }, [position, mapData, onMapUpdate]);
+
   if (!mapData) {
     return <div>Loading map...</div>;
   }
 
-  const { width, height } = mapData;
-  const mapWidth = width * GridLayout.WIDTH + GridLayout.ROW_OFFSET + (ScrollConfig.PADDING * 2);
-  const mapHeight = height * GridLayout.WIDTH * 0.75 + (ScrollConfig.PADDING * 2);
+  //const { width, height } = mapData;
+  const mapWidth = mapData.width * GridLayout.WIDTH + GridLayout.ROW_OFFSET + (ScrollConfig.PADDING * 2);
+  const mapHeight = mapData.height * GridLayout.WIDTH * 0.75 + (ScrollConfig.PADDING * 2);
   const mapDimension = {x: mapWidth, y: mapHeight}
 
   /**
@@ -132,7 +153,7 @@ export const MapRenderer: React.FC<Props> = ({ mapFile }) => {
     }
   };
 
-  const grid = generateGrid(width, height);
+  const grid = generateGrid(mapData.width, mapData.height);
 
   return (
     <div ref={mapRef} style={wrapperStyle}>
@@ -152,12 +173,15 @@ export const MapRenderer: React.FC<Props> = ({ mapFile }) => {
       )}
       <div style={mapSheetStyle(mapDimension, position)}>
         {grid.map((row, index) => (
-          <div key={index} style={gridStyle(height, index)}>
+          <div key={index} style={gridStyle(mapData.height, index)}>
             {
               row.map((coordinate) => renderHex(coordinate, mapData.terrain[coordinate.y][coordinate.x] as TerrainType))
             }
           </div>
         ))}
+        
+        {/* Render children (like UnitRenderer) inside the map sheet */}
+        {children}
       </div>
     </div>
   );

@@ -1,0 +1,64 @@
+{
+    "width": 15,
+    "height": 15,
+    "terrain": [
+      ["plain", "plain", "plain", "mountain", "mountain", "mountain", "plain", "plain", "plain", "plain", "sea", "sea", "sea", "sea", "sea"],
+      ["plain", "plain", "mountain", "mountain", "cliff", "mountain", "plain", "plain", "plain", "plain", "plain", "sea", "sea", "sea", "sea"],
+      ["plain", "plain", "mountain", "cliff", "cliff", "mountain", "plain", "plain", "forest", "forest", "plain", "plain", "sea", "sea", "sea"],
+      ["plain", "plain", "plain", "mountain", "mountain", "plain", "plain", "forest", "forest", "forest", "forest", "plain", "plain", "sea", "sea"],
+      ["plain", "road", "road", "road", "plain", "plain", "plain", "forest", "forest", "forest", "forest", "forest", "plain", "plain", "sea"],
+      ["plain", "road", "plain", "road", "road", "plain", "plain", "plain", "forest", "forest", "forest", "plain", "plain", "plain", "plain"],
+      ["plain", "road", "plain", "plain", "road", "road", "road", "plain", "plain", "plain", "plain", "plain", "plain", "plain", "plain"],
+      ["plain", "road", "plain", "plain", "plain", "plain", "road", "road", "road", "road", "road", "road", "road", "plain", "plain"],
+      ["plain", "road", "road", "plain", "plain", "plain", "plain", "plain", "plain", "plain", "plain", "plain", "road", "plain", "plain"],
+      ["plain", "plain", "road", "road", "plain", "river", "river", "river", "plain", "plain", "plain", "plain", "road", "plain", "plain"],
+      ["swamp", "swamp", "plain", "road", "river", "river", "plain", "river", "river", "plain", "plain", "road", "road", "plain", "plain"],
+      ["swamp", "swamp", "swamp", "plain", "river", "plain", "plain", "plain", "river", "river", "road", "road", "plain", "plain", "plain"],
+      ["swamp", "swamp", "swamp", "plain", "river", "plain", "ruins", "plain", "plain", "river", "road", "plain", "wasteland", "wasteland", "wasteland"],
+      ["swamp", "swamp", "plain", "plain", "river", "ruins", "ruins", "ruins", "plain", "river", "road", "wasteland", "wasteland", "wasteland", "wasteland"],
+      ["swamp", "plain", "plain", "plain", "river", "plain", "ruins", "plain", "plain", "river", "wasteland", "wasteland", "wasteland", "wasteland", "wasteland"]
+    ],
+    "background": "background-0001",
+    "deployableCells": [
+    {
+      "x": 0,
+      "y": 2,
+      "index": 1
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "index": 2
+    },
+    {
+      "x": 1,
+      "y": 0,
+      "index": 3
+    },
+    {
+      "x": 1,
+      "y": 4,
+      "index": 4
+    },
+    {
+      "x": 2,
+      "y": 3,
+      "index": 5
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "index": 6
+    },
+    {
+      "x": 3,
+      "y": 1,
+      "index": 7
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "index": 8
+    }
+  ]
+}

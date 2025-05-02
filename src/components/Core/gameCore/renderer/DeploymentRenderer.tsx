@@ -60,7 +60,13 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
   useEffect(() => {
     const loadMapData = async () => {
       try {
-        const map = await import(`../map-data/map-${stageId}.json`);
+        // Load map data from public directory instead of importing
+        const response = await fetch(`/map-data/${stageId}.json`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch map data for ${stageId}: ${response.statusText}`);
+        }
+        
+        const map = await response.json();
         console.log(`Loaded map data for ${stageId}:`, map);
         setMapData(map);
 

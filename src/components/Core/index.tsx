@@ -1,19 +1,5 @@
 import React from 'react';
-import { Outlet, useParams } from 'react-router-dom';
-import { BattlefieldRenderer } from './gameCore/renderer/BattlefieldRenderer';
-import { DeploymentRenderer } from './gameCore/renderer/DeploymentRenderer';
-
-// Battlefield component with stageId parameter
-const Battlefield = () => {
-  const { stageId = '0001' } = useParams<{ stageId?: string }>();
-  return <BattlefieldRenderer stageId={stageId} />;
-};
-
-// Deployment component with stageId parameter
-const Deployment = () => {
-  const { stageId = '0001' } = useParams<{ stageId?: string }>();
-  return <DeploymentRenderer stageId={stageId} />;
-};
+import { Outlet } from 'react-router-dom';
 
 const Core: React.FC = () => {
   return (

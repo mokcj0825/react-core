@@ -64,12 +64,18 @@ export const MapRenderer: React.FC<Props> = ({ mapFile, onMapUpdate, children })
 
   /**
    * Loads map data from a JSON file.
-   * The file should be located in the map-data directory.
+   * The file should be located in the public directory.
    * @async
    */
   const loadMapData = async () => {
     try {
-      const map = await import(`../map-data/${mapFile}.json`);
+      // Load map data from public directory instead of importing
+      const response = await fetch(`/map-data/${mapFile}.json`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch map data for ${mapFile}: ${response.statusText}`);
+      }
+      
+      const map = await response.json();
       console.log(`Loaded map data for ${mapFile}:`, map);
       setMapData(map);
       

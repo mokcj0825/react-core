@@ -11,12 +11,6 @@ export interface ShowMessageEvent extends DialogEvent {
 	characterName?: string;
 }
 
-export enum SpritePosition {
-	LEFT = 'LEFT',
-	MIDDLE = 'MIDDLE',
-	RIGHT = 'RIGHT'
-}
-
 /**
  * Type guard to check if an event is a show message event
  */
@@ -36,7 +30,7 @@ const ShowMessage: React.FC<ShowMessageProps> = ({ event }) => {
 		return null;
 	}
 
-	const { characterName = SpritePosition.MIDDLE, message } = event;
+	const { characterName = '', message } = event;
 	const [indicatorOpacity, setIndicatorOpacity] = useState(0.5);
 	
 	// Animation for the continue indicator

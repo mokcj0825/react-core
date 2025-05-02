@@ -4,6 +4,7 @@ import BottomBar from '../uiComponent/BottomBar';
 import TopBar from '../uiComponent/TopBar';
 import { DeploymentCharacter } from '../types/DeploymentCharacter';
 import UnitRenderer from './UnitRenderer';
+import {Origin2D, Vector2D} from "../../../Editor/utils/Vector2D.ts";
 
 interface DeploymentData {
 	stageId: string;
@@ -18,13 +19,13 @@ interface Props {
 export const BattlefieldRenderer: React.FC<Props> = ({ stageId }) => {
 	const [deploymentData, setDeploymentData] = useState<DeploymentData | null>(null);
 	const gameRef = useRef<HTMLDivElement | null>(null);
-	const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
-	const [mapDimensions, setMapDimensions] = useState({ width: 0, height: 0 });
-
-	// Handle map position updates from MapRenderer
-	const handleMapUpdate = (position: { x: number, y: number }, dimensions: { width: number, height: number }) => {
-		setMapPosition(position);
-		setMapDimensions(dimensions);
+	const mapDimensionsRef = useRef(Origin2D);
+	
+	// Only store map dimensions, not position
+	const handleMapUpdate = (position: Vector2D,
+	                         dimensions: Vector2D) => {
+		mapDimensionsRef.current = dimensions;
+		console.log('position', position);
 	};
 
 	useEffect(() => {
@@ -34,8 +35,7 @@ export const BattlefieldRenderer: React.FC<Props> = ({ stageId }) => {
 				if (storedData) {
 					const data = JSON.parse(storedData) as DeploymentData;
 					setDeploymentData(data);
-					// Clear the deployment data after loading it
-					//localStorage.removeItem(`deployment_${stageId}`);
+					localStorage.removeItem(`deployment_${stageId}`);
 				} else {
 					console.error('No deployment data found for stage:', stageId);
 				}
@@ -53,45 +53,40 @@ export const BattlefieldRenderer: React.FC<Props> = ({ stageId }) => {
 
 	console.log('Deployment data loaded:', deploymentData);
 
+	// Pass both the unit and map renderer as children
+	const renderContent = () => {
+		return (
+			<>
+				<MapRenderer 
+					mapFile={`map-${stageId}`} 
+					onMapUpdate={handleMapUpdate}
+				>
+					{deploymentData.deployedUnits.length > 0 && (
+						<UnitRenderer 
+							units={deploymentData.deployedUnits} 
+							mapDimensions={mapDimensionsRef.current}
+						/>
+					)}
+				</MapRenderer>
+			</>
+		);
+	};
+
 	return (
 		<div 
 			ref={gameRef}
 			style={wrapperStyle}
 		>
 			<TopBar />
-			
-			{/* Background and Grid Layer (z-index: 1) */}
-			<div style={layerStyle}>
-				<MapRenderer 
-					mapFile={`map-${stageId}`} 
-					onMapUpdate={handleMapUpdate}
-				/>
+			<div style={battlefieldContainerStyle}>
+				{renderContent()}
 			</div>
-			
-			{/* Unit Layer (z-index: 3) */}
-			{deploymentData.deployedUnits.length > 0 && (
-				<div style={{
-					...layerStyle,
-					zIndex: 3,
-					pointerEvents: 'none'
-				}}>
-					<UnitRenderer 
-						units={deploymentData.deployedUnits} 
-						mapPosition={mapPosition}
-						mapDimensions={mapDimensions}
-					/>
-				</div>
-			)}
-			
 			<BottomBar />
-			
-			{/* Future renderers will go here */}
-			{/* <div style={{...layerStyle, zIndex: 4}}><EffectRenderer /></div> */}
-			{/* <div style={{...layerStyle, zIndex: 5}}><UIRenderer /></div> */}
 		</div>
 	);
 };
 
+// Main container
 const wrapperStyle = {
 	width: '100%',
 	height: '100vh',
@@ -105,12 +100,11 @@ const wrapperStyle = {
 	overflow: 'hidden'
 } as const;
 
-const layerStyle = {
-	position: 'absolute',
-	top: 0,
-	left: 0,
+const battlefieldContainerStyle = {
+	position: 'relative',
 	width: '100%',
-	height: '100%',
-	zIndex: 1
+	height: '100%', 
+	flex: 1,
+	overflow: 'hidden'
 } as const;
 

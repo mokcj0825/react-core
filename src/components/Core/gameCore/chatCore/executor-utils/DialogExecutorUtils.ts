@@ -1,6 +1,4 @@
 import React from 'react';
-import { DialogEvent } from '../utils/DialogEvent';
-import { EventCommand } from '../EventCommand';
 
 /**
  * Constants for dialog execution
@@ -10,44 +8,6 @@ export const DIALOG_CONSTANTS = {
   STORAGE_SUFFIX: {
     NEXT_SCRIPT_ID: '_nextScriptId'
   }
-};
-
-/**
- * Type guard to check if an event is a ShowMessageEvent
- */
-export const isShowMessageEvent = (event: any): boolean => {
-  return event?.eventCommand === EventCommand.SHOW_MESSAGE;
-};
-
-/**
- * Type guard to check if an event is a ClearMessageEvent
- */
-export const isClearMessageEvent = (event: any): boolean => {
-  return event?.eventCommand === EventCommand.CLEAR_MESSAGE;
-};
-
-/**
- * Type guard to check if an event is a RequestSelectionEvent
- */
-export const isRequestSelectionEvent = (event: any): boolean => {
-  return event?.eventCommand === EventCommand.REQUEST_SELECTION;
-};
-
-/**
- * Checks if an event is a duplicate in the history array
- */
-export const isDuplicateEvent = (event: DialogEvent, history: DialogEvent[]): boolean => {
-  // Only check the most recent events for performance
-  const recentHistory = history.slice(-5);
-  
-  // Check for duplicate based on message content and character name
-  return recentHistory.some(historyEvent => 
-    historyEvent.eventCommand === event.eventCommand && 
-    'message' in historyEvent && 'message' in event && 
-    historyEvent.message === event.message &&
-    ('characterName' in historyEvent ? historyEvent.characterName : '') === 
-    ('characterName' in event ? event.characterName : '')
-  );
 };
 
 /**

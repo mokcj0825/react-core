@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DeploymentCharacter } from '../types/DeploymentCharacter';
-import { createHexCoordinate } from '../types/HexCoordinate';
 import { GridLayout } from '../system-config/GridLayout';
 import { ScrollConfig } from '../system-config/ScrollConfig';
+import {Origin2D, Vector2D} from "../../../Editor/utils/Vector2D.ts";
 
 // Constants for unit rendering configuration
 const UNIT_RENDER_CONFIG = {
@@ -15,79 +15,70 @@ const UNIT_RENDER_CONFIG = {
 
 // Unit data interface matching deployment data structure
 interface UnitProps {
-  units: (DeploymentCharacter & { position: { x: number; y: number } })[];
-  mapPosition?: { x: number, y: number }; // Position of map for transform sync
-  mapDimensions?: { width: number, height: number }; // Map dimensions
+  units: (DeploymentCharacter & { position: Vector2D })[];
+  mapDimensions?: Vector2D;
 }
 
 /**
  * UnitRenderer component
- * 
  * Renders units on the battlefield based on their hex coordinates
- * Units stick to the grid positions, not to the screen
+ * Uses Cartesian coordinate system with (0,0) at bottom-left corner
  */
 export const UnitRenderer: React.FC<UnitProps> = ({ 
   units,
-  mapPosition = { x: 0, y: 0 },
-  mapDimensions = { width: 0, height: 0 }
+  mapDimensions = Origin2D
 }) => {
-  console.log('Rendering units with map position:', mapPosition);
-
-  // Use the same transform style as the MapRenderer's mapSheetStyle
-  const unitLayerTransform = {
-    transform: `translate(${mapPosition.x}px, ${mapPosition.y}px)`,
-    transition: 'transform 0.1s linear',
-  };
+  // Memoize unit positions to prevent re-calculation on each render
+  const unitPositions = useMemo(() => {
+    // Calculate the grid height once
+    const hexHeight = GridLayout.WIDTH * UNIT_RENDER_CONFIG.HEX_HEIGHT_RATIO;
+      
+    return units.map(unit => {
+      const { x, y } = unit.position;
+      
+      // Calculate position within the Cartesian grid
+      // For a Cartesian system with (0,0) at bottom-left
+      const isOffsetRow = y % 2 === 0;
+      const rowOffset = isOffsetRow ? GridLayout.ROW_OFFSET : 0;
+      
+      // Calculate final position
+      const unitX = (x * GridLayout.WIDTH) + rowOffset + ScrollConfig.PADDING;
+      // For bottom positioning, we directly use y coordinate
+      const unitY = y * hexHeight + ScrollConfig.PADDING;
+      
+      return {
+        unit,
+        position: { x: unitX, y: unitY }
+      };
+    });
+  }, [units, mapDimensions.y]);
 
   return (
-    <div 
-      className="unit-layer"
-      style={{
-        ...unitLayerStyle,
-        ...unitLayerTransform,
-        width: mapDimensions.width || '100%',
-        height: mapDimensions.height || '100%',
-        padding: `${ScrollConfig.PADDING}px`,
-      }}
-    >
-      {units.map((unit) => {
-        const { x, y } = unit.position;
-        const hexCoord = createHexCoordinate(x, y);
-        
-        // Calculate position within hex grid - same calculation as used in MapRenderer
-        const hexHeight = GridLayout.WIDTH * UNIT_RENDER_CONFIG.HEX_HEIGHT_RATIO;
-        const isEvenRow = y % 2 === 0;
-        const rowOffset = isEvenRow ? 0 : GridLayout.ROW_OFFSET;
-        const unitX = (x * GridLayout.WIDTH) + rowOffset;
-        const unitY = y * hexHeight;
-        
-        console.log(`Unit ${unit.id} at grid (${x},${y}), pixel: (${unitX},${unitY})`);
-        
-        return (
-          <div
-            key={`unit-${unit.id}-${x}-${y}`}
-            style={{
-              ...unitContainerStyle,
-              left: `${unitX}px`,
-              top: `${unitY}px`,
+    <div className="unit-layer" style={unitLayerStyle}>
+      {unitPositions.map(({ unit, position }) => (
+        <div
+          key={`unit-${unit.id}-${unit.position.x}-${unit.position.y}`}
+          style={{
+            ...unitContainerStyle,
+            left: `${position.x}px`,
+            bottom: `${position.y}px`,
+          }}
+        >
+          <img
+            src={`${UNIT_RENDER_CONFIG.SPRITE_PATH}${unit.sprite}${UNIT_RENDER_CONFIG.SPRITE_EXTENSION}`}
+            alt={unit.name}
+            style={unitSpriteStyle}
+            onError={(e) => {
+              console.error(`Failed to load sprite for ${unit.sprite}`);
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.parentElement!.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background-color:rgba(224,224,224,0.7);color:#666;font-size:10px;">Missing</div>';
             }}
-          >
-            <img
-              src={`${UNIT_RENDER_CONFIG.SPRITE_PATH}${unit.sprite}${UNIT_RENDER_CONFIG.SPRITE_EXTENSION}`}
-              alt={unit.name}
-              style={unitSpriteStyle}
-              onError={(e) => {
-                console.error(`Failed to load sprite for ${unit.sprite}`);
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement!.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background-color:rgba(224,224,224,0.7);color:#666;font-size:10px;">Missing</div>';
-              }}
-            />
-            <div style={unitNameStyle}>
-              {unit.name}
-            </div>
+          />
+          <div style={unitNameStyle}>
+            {unit.name}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 };
@@ -97,9 +88,9 @@ const unitLayerStyle = {
   position: 'absolute' as const,
   top: 0,
   left: 0,
+  width: '100%',
+  height: '100%',
   pointerEvents: 'none' as const,
-  boxSizing: 'border-box' as const,
-  margin: 0,
   zIndex: UNIT_RENDER_CONFIG.Z_INDEX,
 };
 

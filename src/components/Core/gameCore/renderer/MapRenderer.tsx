@@ -7,6 +7,7 @@ import { GridLayout } from '../system-config/GridLayout';
 import { MapBorder } from '../component/MapBorder';
 import { calculateNewPosition, Position, ScrollDirection } from "./map-utils";
 import { BackgroundRenderer } from './BackgroundRenderer';
+import {Origin2D, Vector2D} from "../../../Editor/utils/Vector2D.ts";
 
 /**
  * Represents the map data structure loaded from JSON files.
@@ -28,10 +29,12 @@ interface MapData {
  * @interface Props
  * @property {string} mapFile - The filename of the map data to load (without extension)
  * @property {function} onMapUpdate - Callback function to report map updates
+ * @property {React.ReactNode} children - Optional children to render inside the map
  */
 interface Props {
   mapFile: string;
-  onMapUpdate?: (position: { x: number; y: number }, dimensions: { width: number; height: number }) => void;
+  onMapUpdate?: (position: Vector2D, dimensions: Vector2D) => void;
+  children?: React.ReactNode;
 }
 
 /**
@@ -52,9 +55,9 @@ interface Props {
  * @example
  * <MapRenderer mapFile="map-0001" />
  */
-export const MapRenderer: React.FC<Props> = ({ mapFile, onMapUpdate }) => {
+export const MapRenderer: React.FC<Props> = ({ mapFile, onMapUpdate, children }) => {
   const [mapData, setMapData] = useState<MapData | null>(null);
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  const [position, setPosition] = useState<Position>(Origin2D);
   const [backgroundLoaded, setBackgroundLoaded] = useState(false);
   const mapRef = useRef<HTMLDivElement | null>(null);
   const scrollInterval = useRef<number | null>(null);
@@ -97,8 +100,8 @@ export const MapRenderer: React.FC<Props> = ({ mapFile, onMapUpdate }) => {
   useEffect(() => {
     if (onMapUpdate && mapData) {
       const dimensions = {
-        width: mapData.width * GridLayout.WIDTH + ScrollConfig.PADDING * 2,
-        height: mapData.height * GridLayout.WIDTH * 0.75 + ScrollConfig.PADDING * 2
+        x: mapData.width * GridLayout.WIDTH + ScrollConfig.PADDING * 2,
+        y: mapData.height * GridLayout.WIDTH * 0.75 + ScrollConfig.PADDING * 2
       };
       onMapUpdate(position, dimensions);
     }
@@ -108,9 +111,9 @@ export const MapRenderer: React.FC<Props> = ({ mapFile, onMapUpdate }) => {
     return <div>Loading map...</div>;
   }
 
-  const { width, height } = mapData;
-  const mapWidth = width * GridLayout.WIDTH + GridLayout.ROW_OFFSET + (ScrollConfig.PADDING * 2);
-  const mapHeight = height * GridLayout.WIDTH * 0.75 + (ScrollConfig.PADDING * 2);
+  //const { width, height } = mapData;
+  const mapWidth = mapData.width * GridLayout.WIDTH + GridLayout.ROW_OFFSET + (ScrollConfig.PADDING * 2);
+  const mapHeight = mapData.height * GridLayout.WIDTH * 0.75 + (ScrollConfig.PADDING * 2);
   const mapDimension = {x: mapWidth, y: mapHeight}
 
   /**
@@ -144,7 +147,7 @@ export const MapRenderer: React.FC<Props> = ({ mapFile, onMapUpdate }) => {
     }
   };
 
-  const grid = generateGrid(width, height);
+  const grid = generateGrid(mapData.width, mapData.height);
 
   return (
     <div ref={mapRef} style={wrapperStyle}>
@@ -164,12 +167,15 @@ export const MapRenderer: React.FC<Props> = ({ mapFile, onMapUpdate }) => {
       )}
       <div style={mapSheetStyle(mapDimension, position)}>
         {grid.map((row, index) => (
-          <div key={index} style={gridStyle(height, index)}>
+          <div key={index} style={gridStyle(mapData.height, index)}>
             {
               row.map((coordinate) => renderHex(coordinate, mapData.terrain[coordinate.y][coordinate.x] as TerrainType))
             }
           </div>
         ))}
+        
+        {/* Render children (like UnitRenderer) inside the map sheet */}
+        {children}
       </div>
     </div>
   );

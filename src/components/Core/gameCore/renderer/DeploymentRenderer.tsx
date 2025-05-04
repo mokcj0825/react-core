@@ -144,7 +144,6 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
   }, []);
 
   const handleStartBattle = useCallback(() => {
-    // Create deployment data object
     const deploymentData = {
       stageId,
       deployableCells: mapData?.deployableCells?.map(cell => ({
@@ -162,9 +161,13 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
     };
 
     localStorage.setItem(`deployment_${stageId}`, JSON.stringify(deploymentData));
-
-    navigate(`/core/battlefield/${stageId}`);
-  }, [stageId, deployedUnits, navigate, mapData]);
+    
+    // Dispatch custom event to notify Stage component
+    const event = new CustomEvent('deployment-updated', {
+      detail: { stageId, deploymentData }
+    });
+    window.dispatchEvent(event);
+  }, [stageId, deployedUnits, mapData]);
 
   if (!mapData) {
     return <div>Loading map...</div>;
@@ -197,7 +200,7 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
             onClick={handleStartBattle}
             style={startButtonStyle}
           >
-            开始战斗
+            部署完成
           </button>
         </div>
       </div>

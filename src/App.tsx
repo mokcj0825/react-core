@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-ro
 import Core from './components/Core';
 import Battlefield from './components/Core/Battlefield';
 import Deployment from './components/Core/Deployment';
+import Stage from './components/Core/Stage';
 import Editor from './components/Editor/index';
 import Log from './components/Log';
 import Back from './components/Back';
@@ -18,6 +19,11 @@ const Home: React.FC = () => {
           <div className="card-icon">🎮</div>
           <h2>Core</h2>
           <p>Main game component</p>
+        </Link>
+        <Link to="/core/stage/0001" className="link-card">
+          <div className="card-icon">🎭</div>
+          <h2>Stage Demo</h2>
+          <p>Stage demonstration</p>
         </Link>
         <Link to="/editor" className="link-card">
           <div className="card-icon">🗺️</div>
@@ -48,8 +54,10 @@ const App: React.FC = () => {
           <Route path="/core" element={<Core />}>
             <Route path="battlefield/:stageId" element={<Battlefield />} />
             <Route path="deploy/:stageId" element={<Deployment />} />
+            <Route path="stage/:stageId" element={<Stage />} />
             <Route path="battlefield" element={<Navigate to="battlefield/0001" replace />} />
             <Route path="deploy" element={<Navigate to="deploy/0001" replace />} />
+            <Route path="stage" element={<Navigate to="stage/0001" replace />} />
             <Route path="" element={<Navigate to="battlefield/0001" replace />} />
           </Route>
           <Route path="/editor" element={<Editor />} />

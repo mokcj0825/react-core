@@ -1,0 +1,14 @@
+{
+  "events": [
+    {
+      "eventCommand": "SHOW_MESSAGE",
+      "characterName": "Demo character",
+      "message": "This is the message for post deploy"
+    }
+  ],
+  "finishEvent": {
+    "nextScene": null,
+    "nextScript": null,
+    "shouldClose": true
+  }
+}

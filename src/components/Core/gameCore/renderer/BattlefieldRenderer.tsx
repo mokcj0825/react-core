@@ -24,34 +24,25 @@ export const BattlefieldRenderer: React.FC<Props> = ({ stageId }) => {
 	// Only store map dimensions, not position
 	const handleMapUpdate = (position: Vector2D, dimensions: Vector2D) => {
 		mapDimensionsRef.current = dimensions;
-		console.log('position', position);
+		//console.log('position', position);
 	};
 
 	useEffect(() => {
 		const loadDeploymentData = async () => {
-			try {
-				// First try to load from localStorage as before
-				const storedData = localStorage.getItem(`deployment_${stageId}`);
-				if (storedData) {
-					const data = JSON.parse(storedData) as DeploymentData;
-					setDeploymentData(data);
-					localStorage.removeItem(`deployment_${stageId}`);
-				} else {
-					// If not in localStorage, try to load from public directory
-					try {
-						const response = await fetch(`/data/deployments/deployment_${stageId}.json`);
-						if (response.ok) {
-							const data = await response.json();
-							setDeploymentData(data);
-						} else {
-							console.error('No deployment data found in public directory for stage:', stageId);
-						}
-					} catch (fetchError) {
-						console.error('Failed to load deployment data from public directory:', fetchError);
-					}
-				}
-			} catch (error) {
-				console.error('Failed to load deployment data:', error);
+			// Try to load from localStorage first
+			const storedData = localStorage.getItem(`deployment_${stageId}`);
+			console.log('storedData', storedData);
+			if (storedData) {
+				const data = JSON.parse(storedData) as DeploymentData;
+				setDeploymentData(data);
+				localStorage.removeItem(`deployment_${stageId}`);
+			} else {
+				// If not in localStorage, assume no pre-deployed units
+				setDeploymentData({
+					stageId,
+					deployableCells: [],
+					deployedUnits: []
+				});
 			}
 		};
 

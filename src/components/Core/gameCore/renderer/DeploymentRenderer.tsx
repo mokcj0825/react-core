@@ -9,7 +9,6 @@ import { HighlightType } from '../types/HighlightType';
 import { BackgroundRenderer } from './BackgroundRenderer';
 import { CharacterRenderer } from './CharacterRenderer';
 import { DeploymentCharacter } from '../types/DeploymentCharacter';
-import { useNavigate } from 'react-router-dom';
 
 // Character data interface
 
@@ -50,7 +49,6 @@ export const DeploymentRenderer: React.FC<Props> = ({ stageId }) => {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [backgroundLoaded, setBackgroundLoaded] = useState(false);
   const [spriteAnimations, setSpriteAnimations] = useState<Record<number, boolean>>({});
-  const navigate = useNavigate();
 
 // Add these state variables to DeploymentRenderer
 const [draggedCharacter, setDraggedCharacter] = useState<DeploymentCharacter | null>(null);
@@ -144,7 +142,6 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
   }, []);
 
   const handleStartBattle = useCallback(() => {
-    // Create deployment data object
     const deploymentData = {
       stageId,
       deployableCells: mapData?.deployableCells?.map(cell => ({
@@ -162,9 +159,13 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
     };
 
     localStorage.setItem(`deployment_${stageId}`, JSON.stringify(deploymentData));
-
-    navigate(`/core/battlefield/${stageId}`);
-  }, [stageId, deployedUnits, navigate, mapData]);
+    
+    // Dispatch custom event to notify Stage component
+    const event = new CustomEvent('deployment-updated', {
+      detail: { stageId, deploymentData }
+    });
+    window.dispatchEvent(event);
+  }, [stageId, deployedUnits, mapData]);
 
   if (!mapData) {
     return <div>Loading map...</div>;
@@ -197,7 +198,7 @@ const [deployedUnits, setDeployedUnits] = useState<Record<string, DeploymentChar
             onClick={handleStartBattle}
             style={startButtonStyle}
           >
-            开始战斗
+            部署完成
           </button>
         </div>
       </div>

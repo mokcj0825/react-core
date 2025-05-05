@@ -272,7 +272,7 @@ export const ChatCore: React.FC<Props> = ({
 	}, [currentMessage]);
 	
 	return (
-		<div style={{ width: '100%', height: '100%', position: 'relative' }}>
+		<div style={{ width: '100%', height: '100%', position: 'fixed', zIndex: 1000, top: 0, left: 0 }}>
 			<BackgroundLayer backgroundImage={background} />
 			<CharacterLayer />
 			<UILayer 

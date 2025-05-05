@@ -71,7 +71,7 @@ export const ScriptExecutor: React.FC<Props> = ({
                 setIsLoading(true);
                 console.log(`Loading script: ${scriptId}`);
                 
-                const response = await fetch(`/dialog-script/${scriptId}.json`);
+                const response = await fetch(`/dialog/${scriptId}.json`);
                 
                 if (!response.ok) {
                     throw new Error(`Failed to load script: ${response.status}`);

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { DeploymentCharacter } from '../types/DeploymentCharacter';
 import { GridLayout } from '../system-config/GridLayout';
 import { ScrollConfig } from '../system-config/ScrollConfig';
@@ -28,7 +28,25 @@ export const UnitRenderer: React.FC<UnitProps> = ({
   units,
   mapDimensions = Origin2D
 }) => {
-  // Memoize unit positions to prevent re-calculation on each render
+  // Use a ref to track if POST_DEPLOY has been announced
+  const hasAnnouncedPostDeploy = useRef(false);
+  
+  // Announce POST_DEPLOY trigger once when units are first deployed
+  useEffect(() => {
+    if (units.length > 0 && !hasAnnouncedPostDeploy.current) {
+      console.log('Trigger: POST_DEPLOY - Units have been deployed');
+      
+      // Dispatch a custom event that Stage.tsx can listen for
+      const postDeployEvent = new CustomEvent('post-deploy-trigger', {
+        detail: { units }
+      });
+      window.dispatchEvent(postDeployEvent);
+      
+      hasAnnouncedPostDeploy.current = true;
+    }
+  }, [units]);
+
+  // Calculate the grid height once
   const unitPositions = useMemo(() => {
     // Calculate the grid height once
     const hexHeight = GridLayout.WIDTH * UNIT_RENDER_CONFIG.HEX_HEIGHT_RATIO;
@@ -51,7 +69,7 @@ export const UnitRenderer: React.FC<UnitProps> = ({
         position: { x: unitX, y: unitY }
       };
     });
-  }, [units, mapDimensions.y]);
+  }, [units]);
 
   return (
     <div className="unit-layer" style={unitLayerStyle}>

@@ -6,6 +6,7 @@ import Stage from './components/Core/Stage';
 import Editor from './components/Editor/index';
 import Log from './components/Log';
 import Back from './components/Back';
+import Architecture from './components/Architecture/Architecture';
 import './App.css';
 
 // Home component that displays the four links
@@ -28,6 +29,11 @@ const Home: React.FC = () => {
           <div className="card-icon">📝</div>
           <h2>Log</h2>
           <p>Log editor</p>
+        </Link>
+        <Link to="/architecture" className="link-card">
+          <div className="card-icon">🏗️</div>
+          <h2>Architecture</h2>
+          <p>System architecture overview</p>
         </Link>
         <Link to="/back" className="link-card">
           <div className="card-icon">↩️</div>
@@ -55,6 +61,7 @@ const App: React.FC = () => {
           </Route>
           <Route path="/editor" element={<Editor />} />
           <Route path="/log" element={<Log />} />
+          <Route path="/architecture" element={<Architecture />} />
           <Route path="/back" element={<Back />} />
         </Routes>
       </div>

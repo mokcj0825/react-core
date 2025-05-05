@@ -1,40 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Battlefield from './Battlefield';
 import { DeploymentRenderer } from './gameCore/renderer/DeploymentRenderer';
 import { BattlefieldRenderer } from './gameCore/renderer/BattlefieldRenderer';
+import { ChatCore } from './gameCore/chatCore/ChatCore';
 
 interface StageData {
   stageId: string;
   name: string;
   description: string;
   mapId: string;
+  stageEvent?: Array<{
+    trigger: string;
+    invoke: string;
+    content: string;
+  }>;
 }
 
-// This is a placeholder chat component that can be replaced with any chat implementation
-const ChatPlaceholder: React.FC<{ stageId: string }> = ({ stageId }) => {
-  return (
-    <div style={{
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: '200px',
-      backgroundColor: 'rgba(0, 0, 0, 0.1)',
-      padding: '16px'
-    }}>
-      <h3>Chat Integration Area</h3>
-      <p>Replace this component with your chat implementation</p>
-      <p>Current Stage: {stageId}</p>
-    </div>
-  );
-};
+interface ChatState {
+  isVisible: boolean;
+  dialogScriptId: string;
+}
 
 const Stage: React.FC = () => {
   const { stageId } = useParams<{ stageId: string }>();
   const [stageData, setStageData] = useState<StageData | null>(null);
   const [deploymentDone, setDeploymentDone] = useState(false);
-  const [showChat, setShowChat] = useState(false);
+  const [chatState, setChatState] = useState<ChatState>({
+    isVisible: false,
+    dialogScriptId: ''
+  });
 
   useEffect(() => {
     const loadStageData = async () => {
@@ -65,6 +59,51 @@ const Stage: React.FC = () => {
     };
   }, []);
 
+  // Process stage event
+  const processStageEvent = (triggerType: string) => {
+    if (!stageData?.stageEvent) return;
+    
+    // Find any events with the matching trigger
+    const matchingEvents = stageData.stageEvent.filter(
+      event => event.trigger === triggerType
+    );
+    
+    if (matchingEvents.length === 0) {
+      console.log(`No ${triggerType} events found in stage data`);
+      return;
+    }
+    
+    // Process each matching event
+    matchingEvents.forEach(event => {
+      console.log(`Processing ${triggerType} event with action: ${event.invoke}`);
+      
+      switch (event.invoke) {
+        case 'chat':
+          console.log(`Showing chat with dialog: ${event.content}`);
+          setChatState({
+            isVisible: true,
+            dialogScriptId: event.content
+          });
+          break;
+        default:
+          console.log(`Unknown invoke action: ${event.invoke}`);
+      }
+    });
+  };
+
+  // Listen for POST_DEPLOY trigger
+  useEffect(() => {
+    const handlePostDeployTrigger = () => {
+      console.log('Stage component received POST_DEPLOY trigger');
+      processStageEvent('POST_DEPLOY');
+    };
+
+    window.addEventListener('post-deploy-trigger', handlePostDeployTrigger);
+    return () => {
+      window.removeEventListener('post-deploy-trigger', handlePostDeployTrigger);
+    };
+  }, [stageData]);
+
   if (!stageId || !stageData) {
     return <div>Loading stage...</div>;
   }
@@ -88,7 +127,8 @@ const Stage: React.FC = () => {
         }}>
           {!deploymentDone && <DeploymentRenderer stageId={stageData.mapId} />}
           {deploymentDone && <BattlefieldRenderer stageId={stageData.mapId} />}
-          {showChat && <ChatPlaceholder stageId={stageId} />}
+          {chatState.isVisible && <ChatCore dialogScriptId={chatState.dialogScriptId} onChatEnd={() => setChatState(
+            { isVisible: false, dialogScriptId: '' })} />}
         </div>
       </div>
     </div>

@@ -9,7 +9,6 @@ import { HighlightType } from '../types/HighlightType';
 import { BackgroundRenderer } from './BackgroundRenderer';
 import { CharacterRenderer } from './CharacterRenderer';
 import { DeploymentCharacter } from '../types/DeploymentCharacter';
-import { useNavigate } from 'react-router-dom';
 
 // Character data interface
 
@@ -50,7 +49,6 @@ export const DeploymentRenderer: React.FC<Props> = ({ stageId }) => {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [backgroundLoaded, setBackgroundLoaded] = useState(false);
   const [spriteAnimations, setSpriteAnimations] = useState<Record<number, boolean>>({});
-  const navigate = useNavigate();
 
 // Add these state variables to DeploymentRenderer
 const [draggedCharacter, setDraggedCharacter] = useState<DeploymentCharacter | null>(null);

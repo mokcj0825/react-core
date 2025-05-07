@@ -1,0 +1,10 @@
+{
+    "description": "This is the town 0001 scene.",
+    "onRenderCompleted": [
+        {
+            "command": "RUN_SCRIPT",
+            "srcScript": "town-0001",
+            "entryPoint": "main"
+        }
+    ]
+}

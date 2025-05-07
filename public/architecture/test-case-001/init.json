@@ -1,0 +1,5 @@
+{
+    "command": "INVOKE_SCENE",
+    "scene": "town",
+    "sceneResource": "town-init.json"
+}

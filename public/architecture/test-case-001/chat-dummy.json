@@ -1,0 +1,34 @@
+{
+    "events": [
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "Hello, player."
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "Hello, player, message 2."
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "Hello, player, message 3."
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "Hello, player, message 4."
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "Hello, player, message 5."
+        }
+    ],
+    "finishEvent": {
+        "eventCommand": "INVOKE_SCENE",
+        "scene": "town",
+        "sceneResource": "town-0001.json"
+    }
+}

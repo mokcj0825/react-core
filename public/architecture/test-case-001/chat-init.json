@@ -1,0 +1,18 @@
+{
+    "events": [
+        {
+            "eventCommand": "SET_BACKGROUND",
+            "image": "background-black.png"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "Hello, player."
+        }
+    ],
+    "finishEvent": {
+        "eventCommand": "INVOKE_SCENE",
+        "scene": "town",
+        "sceneResource": "town-0001.json"
+    }
+}

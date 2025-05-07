@@ -1,0 +1,45 @@
+{
+    "name": "Test Case 001",
+    "description": "Basic scene transition flow test",
+    "entryPoint": "init.json",
+    "flow": [
+        {
+            "file": "init.json",
+            "description": "Entry point that starts with Town scene",
+            "command": "INVOKE_SCENE",
+            "target": "town-init.json"
+        },
+        {
+            "file": "town-init.json",
+            "description": "Initial town scene that transitions to Chat",
+            "command": "INVOKE_SCENE",
+            "target": "chat-dummy.json"
+        },
+        {
+            "file": "chat-dummy.json",
+            "description": "Chat scene with 5 sequential messages",
+            "command": "SHOW_MESSAGE",
+            "count": 5,
+            "target": "town-0001.json"
+        },
+        {
+            "file": "town-0001.json",
+            "description": "Final town scene with script execution",
+            "command": "RUN_SCRIPT",
+            "target": "town-0001"
+        }
+    ],
+    "files": {
+        "init.json": "Entry point configuration",
+        "town-init.json": "Initial town scene setup",
+        "chat-dummy.json": "Test chat sequence",
+        "town-0001.json": "Final town scene",
+        "chat-init.json": "Alternative chat initialization (not used in this flow)"
+    },
+    "commands": {
+        "INVOKE_SCENE": "Changes the current scene",
+        "SHOW_MESSAGE": "Displays a message in chat",
+        "SET_BACKGROUND": "Sets the background image",
+        "RUN_SCRIPT": "Executes a named script"
+    }
+}

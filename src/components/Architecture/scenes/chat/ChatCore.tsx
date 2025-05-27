@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheater } from '../../TheaterCore';
 import ChatBackground from './ChatBackground';
 import CharacterSprite from './CharacterSprite';
 import ChatMessage from './ChatMessage';
 
-interface ChatEvent {
+interface ShowMessageEvent {
   eventCommand: 'SHOW_MESSAGE';
   characterName: string;
   message: string;
 }
+
+interface WriteConsoleEvent {
+  eventCommand: 'WRITE_CONSOLE';
+  message: string;
+  type: 'info' | 'warning' | 'error';
+}
+
+type ChatEvent = ShowMessageEvent | WriteConsoleEvent;
 
 interface FinishEvent {
   eventCommand: 'INVOKE_SCENE';
@@ -27,6 +35,56 @@ const ChatCore: React.FC = () => {
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Memoize the current event to prevent recalculation
+  const currentEvent = useMemo(() => {
+    if (!chatData) return null;
+    return chatData.events[currentEventIndex];
+  }, [chatData, currentEventIndex]);
+
+  // Memoize the common container styles
+  const containerStyles = useMemo(() => ({
+    position: 'relative' as const,
+    width: '100%',
+    height: '100%',
+    cursor: 'pointer'
+  }), []);
+
+  // Memoize handleMessageComplete to prevent recreation
+  const handleMessageComplete = useCallback(() => {
+    if (!chatData) return;
+
+    if (currentEventIndex < chatData.events.length - 1) {
+      setCurrentEventIndex(prev => prev + 1);
+    } else {
+      // All messages shown, trigger finish event
+      dispatchSceneCommand({
+        command: 'INVOKE_SCENE',
+        scene: chatData.finishEvent.scene as any,
+        sceneResource: chatData.finishEvent.sceneResource
+      });
+    }
+  }, [chatData, currentEventIndex, dispatchSceneCommand]);
+
+  // Memoize handleClick to prevent recreation
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    // Check if the click was on an interactive element
+    const target = e.target as HTMLElement;
+    const isInteractive = target.closest('button, input, select, textarea, [role="button"]');
+    
+    // Only proceed if not clicking an interactive element
+    if (!isInteractive) {
+      handleMessageComplete();
+    }
+  }, [handleMessageComplete]);
+
+  // Memoize the console event dispatch
+  const dispatchConsoleEvent = useCallback((message: string, type: 'info' | 'warning' | 'error') => {
+    const consoleEvent = new CustomEvent('consoleWrite', {
+      detail: { message, type }
+    });
+    window.dispatchEvent(consoleEvent);
+  }, []);
 
   useEffect(() => {
     if (!sceneResource) {
@@ -55,32 +113,6 @@ const ChatCore: React.FC = () => {
     fetchChatData();
   }, [sceneResource]);
 
-  const handleMessageComplete = () => {
-    if (!chatData) return;
-
-    if (currentEventIndex < chatData.events.length - 1) {
-      setCurrentEventIndex(prev => prev + 1);
-    } else {
-      // All messages shown, trigger finish event
-      dispatchSceneCommand({
-        command: 'INVOKE_SCENE',
-        scene: chatData.finishEvent.scene as any,
-        sceneResource: chatData.finishEvent.sceneResource
-      });
-    }
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    // Check if the click was on an interactive element
-    const target = e.target as HTMLElement;
-    const isInteractive = target.closest('button, input, select, textarea, [role="button"]');
-    
-    // Only proceed if not clicking an interactive element
-    if (!isInteractive) {
-      handleMessageComplete();
-    }
-  };
-
   if (loading) {
     return <div>Loading chat data...</div>;
   }
@@ -89,37 +121,47 @@ const ChatCore: React.FC = () => {
     return <div>Error: {error}</div>;
   }
 
-  if (!chatData) {
+  if (!chatData || !currentEvent) {
     return <div>No chat data available</div>;
   }
 
-  const currentEvent = chatData.events[currentEventIndex];
+  // Handle different commands using switch-case
+  switch (currentEvent.eventCommand) {
+    case 'WRITE_CONSOLE':
+      // Dispatch console event and move to next event
+      dispatchConsoleEvent(currentEvent.message, currentEvent.type);
+      handleMessageComplete();
+      return (
+        <div style={containerStyles} onClick={handleClick}>
+          <ChatBackground />
+        </div>
+      );
 
-  return (
-    <div 
-      style={{ 
-        position: 'relative', 
-        width: '100%', 
-        height: '100%',
-        cursor: 'pointer' // Indicate clickability
-      }}
-      onClick={handleClick}
-    >
-      <ChatBackground />
-      
-      {currentEvent && (
-        <ChatMessage
-          message={{
-            id: currentEventIndex.toString(),
-            text: currentEvent.message,
-            speaker: currentEvent.characterName,
-            type: 'dialogue'
-          }}
-          onMessageComplete={handleMessageComplete}
-        />
-      )}
-    </div>
-  );
+    case 'SHOW_MESSAGE':
+      return (
+        <div style={containerStyles} onClick={handleClick}>
+          <ChatBackground />
+          <ChatMessage
+            message={{
+              id: currentEventIndex.toString(),
+              text: currentEvent.message,
+              speaker: currentEvent.characterName,
+              type: 'dialogue'
+            }}
+            onMessageComplete={handleMessageComplete}
+          />
+        </div>
+      );
+
+    default:
+      const unknownEvent = currentEvent as ChatEvent;
+      console.warn('Unknown event command:', unknownEvent.eventCommand);
+      return (
+        <div style={containerStyles} onClick={handleClick}>
+          <ChatBackground />
+        </div>
+      );
+  }
 };
 
-export default ChatCore; 
+export default React.memo(ChatCore); 

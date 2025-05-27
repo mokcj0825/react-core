@@ -1,6 +1,11 @@
 {
     "events": [
         {
+            "eventCommand": "WRITE_CONSOLE",
+            "type": "info",
+            "message": "Chat dummy scene loaded."
+        },
+        {
             "eventCommand": "SHOW_MESSAGE",
             "characterName": "Narrator",
             "message": "Hello, player."
@@ -24,6 +29,11 @@
             "eventCommand": "SHOW_MESSAGE",
             "characterName": "Narrator",
             "message": "Hello, player, message 5."
+        },
+        {
+            "eventCommand": "WRITE_CONSOLE",
+            "type": "info",
+            "message": "Chat dummy scene finished."
         }
     ],
     "finishEvent": {

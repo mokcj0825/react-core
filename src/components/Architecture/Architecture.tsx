@@ -1,6 +1,7 @@
 import React from 'react';
 import TheaterCore from './TheaterCore';
 import ControlPanel from './ControlPanel';
+import ConsolePanel from './ConsolePanel';
 
 const Architecture: React.FC = () => {
   return (
@@ -27,9 +28,12 @@ const Architecture: React.FC = () => {
         top: '0',
         right: '0',
         width: '30%',
-        height: '100%'
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
       }}>
         <ControlPanel />
+        <ConsolePanel />
       </div>
     </div>
   );

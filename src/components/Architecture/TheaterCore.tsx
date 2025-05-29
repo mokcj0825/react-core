@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import Theater from './Theater';
 
 // Define the scene types
@@ -13,11 +13,17 @@ type TheaterEvent =
   | { type: 'EXIT_GAME' };
 
 // Define the command types
-type SceneCommand = {
-  command: 'INVOKE_SCENE';
-  scene: Scene;
-  sceneResource: string;
-};
+type SceneCommand = 
+  | {
+      command: 'INVOKE_SCENE';
+      scene: Scene;
+      sceneResource: string;
+    }
+  | {
+      command: 'INVOKE_SCRIPT';
+      script: string;
+      entryPoint: string;
+    };
 
 // Context for providing event dispatch to nested components
 interface TheaterContextType {
@@ -75,7 +81,34 @@ const TheaterCore: React.FC<TheaterCoreProps> = ({ width = '100%', height = '100
         setScenes(newScenes);
         setSceneResource(command.sceneResource);
         break;
-        
+      case 'INVOKE_SCRIPT':
+        const selectedTestCase = localStorage.getItem('selectedTestCase') || 'test-case-001';
+        fetch(`/architecture/${selectedTestCase}/${command.script}`)
+          .then(response => response.text())
+          .then(scriptContent => {
+            // Create a blob URL for the script
+            const blob = new Blob([scriptContent], { type: 'application/javascript' });
+            const scriptUrl = URL.createObjectURL(blob);
+            
+            // Load and execute the script
+            import(scriptUrl)
+              .then(module => {
+                if (typeof module[command.entryPoint] === 'function') {
+                  module[command.entryPoint]();
+                } else {
+                  console.error(`Entry point ${command.entryPoint} not found in script`);
+                }
+                // Clean up the blob URL
+                URL.revokeObjectURL(scriptUrl);
+              })
+              .catch(error => {
+                console.error('Error executing script:', error);
+              });
+          })
+          .catch(error => {
+            console.error('Error loading script:', error);
+          });
+        break;
       default:
         console.warn('Unknown scene command:', command);
     }
@@ -94,26 +127,25 @@ const TheaterCore: React.FC<TheaterCoreProps> = ({ width = '100%', height = '100
         // Logic to start a new game
         console.log('Start game event - fetching initialization data');
         const selectedTestCase = localStorage.getItem('selectedTestCase') || 'test-case-001';
-        fetch(`/architecture/${selectedTestCase}init.json`)
+        fetch(`/architecture/${selectedTestCase}/init.json`)
           .then(response => response.json())
           .then(data => {
-            console.log('Game initialization data:', data);
-            
-            // Handle the current init.json structure
-            if (data.command === 'INVOKE_SCENE' && data.scene && typeof data.scene === 'string') {
-              const scene = data.scene as Scene;
-              console.log('Setting scene from command:', scene);
-              if (scene in scenes) {
-                handleSceneCommand({
-                  command: 'INVOKE_SCENE',
-                  scene: scene,
-                  sceneResource: data.sceneResource || ''
-                });
-              } else {
-                console.warn('Invalid scene type:', scene);
-              }
-            } else {
-              console.warn('Invalid init.json structure or missing scene');
+
+            switch (data.command) {
+              case 'INVOKE_SCENE':
+                const scene = data.scene as Scene;
+                if (scene in scenes) {
+                  handleSceneCommand(data);
+                } else {
+                  console.warn('Invalid scene type:', scene);
+                }
+                break;
+              case 'INVOKE_SCRIPT':
+                console.log('Executing script:', data.script, 'with entry point:', data.entryPoint);
+                handleSceneCommand(data);
+                break;
+              default:
+                console.warn('Invalid init.json structure or missing scene');
             }
           })
           .catch(error => {

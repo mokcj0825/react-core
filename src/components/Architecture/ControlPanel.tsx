@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 const TEST_CASES = [
-  { id: 'test-case-001', label: 'Test Case 001' }
+  { id: 'test-case-001', label: 'Test Case 001' },
+  { id: 'test-case-002', label: 'Test Case 002' }
 ];
 
 const ControlPanel: React.FC = () => {
-  const [selectedTestCase, setSelectedTestCase] = useState(() => {
-    return localStorage.getItem('selectedTestCase') || 'test-case-001';
-  });
+  const [selectedTestCase, setSelectedTestCase] = useState('test-case-001');
 
   useEffect(() => {
-    localStorage.setItem('selectedTestCase', selectedTestCase + '/');
+    localStorage.setItem('selectedTestCase', selectedTestCase);
   }, [selectedTestCase]);
 
   const handleTestCaseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -48,6 +47,14 @@ const ControlPanel: React.FC = () => {
             </option>
           ))}
         </select>
+        <div style={{ 
+          marginTop: '8px',
+          fontSize: '0.9em',
+          color: '#666',
+          fontStyle: 'italic'
+        }}>
+          Currently running: {TEST_CASES.find(tc => tc.id === selectedTestCase)?.label}
+        </div>
       </div>
     </div>
   );

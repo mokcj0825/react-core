@@ -1,0 +1,5 @@
+{
+  "command": "INVOKE_SCRIPT",
+  "script": "init.ts",
+  "entryPoint": "main"
+}

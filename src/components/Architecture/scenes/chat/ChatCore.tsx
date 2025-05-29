@@ -96,7 +96,7 @@ const ChatCore: React.FC = () => {
       try {
         setLoading(true);
         const selectedTestCase = localStorage.getItem('selectedTestCase') || 'test-case-001';
-        const response = await fetch(`/architecture/${selectedTestCase}${sceneResource}`);
+        const response = await fetch(`/architecture/${selectedTestCase}/${sceneResource}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch chat data: ${response.status}`);
         }

@@ -18,7 +18,7 @@ const Town: React.FC = () => {
       try {
         setLoading(true);
         const selectedTestCase = localStorage.getItem('selectedTestCase') || 'test-case-001';
-        const response = await fetch(`/architecture/${selectedTestCase}${sceneResource}`);
+        const response = await fetch(`/architecture/${selectedTestCase}/${sceneResource}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch script: ${response.status}`);
         }
@@ -43,21 +43,22 @@ const Town: React.FC = () => {
       // Execute onRenderCompleted commands if they exist
       if (scriptData.onRenderCompleted && Array.isArray(scriptData.onRenderCompleted)) {
         scriptData.onRenderCompleted.forEach(async (command: any) => {
-          if (command.command === 'RUN_SCRIPT') {
-            try {
-              const selectedTestCase = localStorage.getItem('selectedTestCase') || 'test-case-001';
-              const scriptModule = await import(`/architecture/${selectedTestCase}/${command.srcScript}.ts`);
-              if (scriptModule[command.entryPoint]) {
-                scriptModule[command.entryPoint]();
-              } else {
-                console.error(`Entry point '${command.entryPoint}' not found in script '${command.srcScript}'`);
+          switch (command.command) {
+            case 'RUN_SCRIPT':
+              try {
+                const selectedTestCase = localStorage.getItem('selectedTestCase') || 'test-case-001';
+                const scriptModule = await import(`/architecture/${selectedTestCase}/${command.srcScript}.ts`);
+                if (scriptModule[command.entryPoint]) {
+                  scriptModule[command.entryPoint]();
+                } else {
+                  console.error(`Entry point '${command.entryPoint}' not found in script '${command.srcScript}'`);
+                }
+              } catch (err) {
+                console.error('Error executing script:', err);
               }
-            } catch (err) {
-              console.error('Error executing script:', err);
-            }
-          } else {
-            dispatchSceneCommand(command);
+              break;
           }
+          dispatchSceneCommand(command);
         });
       }
     }

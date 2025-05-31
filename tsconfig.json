@@ -11,8 +11,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false, //Fuck this garbage! This is a prototype!
+    "noUnusedParameters": false, //Fuck this garbage too! This is a prototype too!
     "noFallthroughCasesInSwitch": true,
     "allowJs": true,
     "esModuleInterop": true,

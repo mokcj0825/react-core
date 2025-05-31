@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import TheaterCore from './TheaterCore';
 import ControlPanel from './ControlPanel';
 import ConsolePanel from './ConsolePanel';
+import { StoryChapterDB } from '../../services/StoryChapterDB';
 
 const Architecture: React.FC = () => {
+  useEffect(() => {
+    const initDB = async () => {
+      try {
+        await StoryChapterDB.getInstance().init();
+        console.log('StoryDB initialized successfully in Architecture component');
+      } catch (error) {
+        console.error('Failed to initialize StoryDB:', error);
+      }
+    };
+
+    initDB();
+  }, []);
+
   return (
     <div style={{
       width: '100%',

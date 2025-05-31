@@ -1,5 +1,15 @@
-{
-  "command": "INVOKE_SCRIPT",
-  "script": "init.ts",
-  "entryPoint": "main"
-}
+[
+  {
+    "command": "INVOKE_SCRIPT",
+    "script": "init.ts",
+    "entryPoint": "main"
+  },
+  {
+    "command": "INVOKE_SCRIPT",
+    "script": "reset.ts",
+    "entryPoint": "reset"
+  },
+  {
+    "command": "RESET_STATE"
+  }
+]

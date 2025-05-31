@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheater } from '../../TheaterCore';
 import ChatBackground from './ChatBackground';
-import CharacterSprite from './CharacterSprite';
+//import CharacterSprite from './CharacterSprite';
 import ChatMessage from './ChatMessage';
 
 interface ShowMessageEvent {

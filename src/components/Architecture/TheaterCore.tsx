@@ -56,6 +56,21 @@ const TheaterCore: React.FC<TheaterCoreProps> = ({ width = '100%', height = '100
         setScenes(newScenes);
         setSceneResource(command.sceneResource);
         break;
+      case 'STACK_SCENE':
+        // Keep existing scenes visible and add the new scene
+        setScenes(prev => ({
+          ...prev,
+          [command.scene]: true
+        }));
+        setSceneResource(command.sceneResource);
+        break;
+      case 'HIDE_SCENE':
+        // Hide the specified scene while preserving others
+        setScenes(prev => ({
+          ...prev,
+          [command.scene]: false
+        }));
+        break;
       case 'INVOKE_SCRIPT':
         await SceneCommandUtils.executeScript(command.script, command.entryPoint);
         break;

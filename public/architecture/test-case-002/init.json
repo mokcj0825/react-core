@@ -11,5 +11,10 @@
   },
   {
     "command": "RESET_STATE"
+  },
+  {
+    "command": "INVOKE_SCENE",
+    "scene": "chat",
+    "sceneResource": "chat-ts002-0001.json"
   }
 ]

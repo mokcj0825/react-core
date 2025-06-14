@@ -1,5 +1,5 @@
-import {Scene} from "./Scene.ts";
-import {SceneCommand} from "./SceneCommand.ts";
+import {Scene} from "./Scene";
+import {SceneCommand} from "./SceneCommand";
 
 export type TheaterCommand =
   | { type: 'CHANGE_SCENE'; payload: Record<Scene, boolean> }

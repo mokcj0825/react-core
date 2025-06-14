@@ -1,6 +1,6 @@
 import {Scene} from "./Scene.ts";
 
-export type SceneCommand = INVOKE_SCENE | INVOKE_SCRIPT | RESET_STATE;
+export type SceneCommand = INVOKE_SCENE | INVOKE_SCRIPT | STACK_SCENE | RESET_STATE | HIDE_SCENE;
 
 type INVOKE_SCENE = {
   command: 'INVOKE_SCENE';
@@ -14,8 +14,19 @@ type INVOKE_SCRIPT = {
   entryPoint: string;
 }
 
+type STACK_SCENE = {
+  command: 'STACK_SCENE';
+  scene: Scene;
+  sceneResource: string;
+}
+
 type RESET_STATE = {
   command: 'RESET_STATE';
+}
+
+type HIDE_SCENE = {
+  command: 'HIDE_SCENE';
+  scene: Scene;
 }
 
 

@@ -19,7 +19,7 @@ interface WriteConsoleEvent {
 type ChatEvent = ShowMessageEvent | WriteConsoleEvent;
 
 interface FinishEvent {
-  eventCommand: 'INVOKE_SCENE';
+  eventCommand: 'INVOKE_SCENE' | 'HIDE_SCENE';
   scene: string;
   sceneResource: string;
 }
@@ -58,11 +58,18 @@ const ChatCore: React.FC = () => {
       setCurrentEventIndex(prev => prev + 1);
     } else {
       // All messages shown, trigger finish event
-      dispatchSceneCommand({
-        command: 'INVOKE_SCENE',
-        scene: chatData.finishEvent.scene as any,
-        sceneResource: chatData.finishEvent.sceneResource
-      });
+      if (chatData.finishEvent.eventCommand === 'HIDE_SCENE') {
+        dispatchSceneCommand({
+          command: 'HIDE_SCENE',
+          scene: 'chat'
+        });
+      } else {
+        dispatchSceneCommand({
+          command: chatData.finishEvent.eventCommand,
+          scene: chatData.finishEvent.scene as any,
+          sceneResource: chatData.finishEvent.sceneResource
+        });
+      }
     }
   }, [chatData, currentEventIndex, dispatchSceneCommand]);
 

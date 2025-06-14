@@ -1,0 +1,10 @@
+{
+    "description": "This is the battlefield 0001 scene.",
+    "onRenderCompleted": [
+        {
+            "command": "STACK_SCENE",
+            "scene": "chat",
+            "sceneResource": "chat-ts002-battle-0001.json"
+        }
+    ]
+}

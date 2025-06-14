@@ -1,0 +1,23 @@
+{
+    "events": [
+        {
+            "eventCommand": "WRITE_CONSOLE",
+            "type": "info",
+            "message": "Chat in battlefield scene loaded."
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "This is the test message that invoked in Battlefield scene."
+        },
+        {
+            "eventCommand": "WRITE_CONSOLE",
+            "type": "info",
+            "message": "Chat in battlefield scene finished."
+        }
+    ],
+    "finishEvent": {
+        "eventCommand": "HIDE_SCENE",
+        "scene": "chat"
+    }
+}

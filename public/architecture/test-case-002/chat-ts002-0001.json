@@ -1,0 +1,14 @@
+{
+    "events": [
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "This is the test case 002, after this chat, the player will be sent to the battlefield."
+        }
+    ],
+    "finishEvent": {
+        "eventCommand": "INVOKE_SCENE",
+        "scene": "battlefield",
+        "sceneResource": "battlefield-ts002-0001.json"
+    }
+}

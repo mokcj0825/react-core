@@ -1,6 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useTheater } from '../TheaterCore';
+import BattlefieldCore from './battlefield/BattlefieldCore';
 
 const Battlefield: React.FC = () => {
+  const { sceneResource, dispatchSceneCommand } = useTheater();
+
+  useEffect(() => {
+    if (sceneResource) {
+      // Load and execute the scene resource
+      fetch(`/architecture/${localStorage.getItem('selectedTestCase') || 'test-case-001'}/${sceneResource}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.onRenderCompleted) {
+            data.onRenderCompleted.forEach((command: any) => {
+              dispatchSceneCommand(command);
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error loading battlefield scene resource:', error);
+        });
+    }
+  }, [sceneResource, dispatchSceneCommand]);
+
   return (
     <div style={{ 
       width: '100%', 
@@ -12,13 +34,7 @@ const Battlefield: React.FC = () => {
       alignItems: 'center',
       backgroundColor: 'rgba(156, 39, 176, 0.1)'
     }}>
-      <div style={{ 
-        padding: '10px 20px',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        borderRadius: '4px'
-      }}>
-        Battlefield
-      </div>
+      <BattlefieldCore />
     </div>
   );
 };

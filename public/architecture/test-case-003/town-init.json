@@ -1,0 +1,12 @@
+{
+  "onRenderScript": {
+
+  },
+  "events": [
+
+  ],
+  "description": "This should simulate how a town to be rendered.",
+  "onRenderCompleted": [
+
+  ]
+}

@@ -1,0 +1,25 @@
+{
+    "events": [
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "欢迎来到卡露蒂亚大陆，现在请输入你的名字吧。"
+        },
+        {
+            "eventCommand": "REQUEST_INPUT",
+            "inputType": "string",
+            "targetField": "playerName",
+            "confirmMessage": "你的名字是：{playerName}，是否确认？"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Narrator",
+            "message": "{playerName}，欢迎你来到卡露蒂亚大陆。数据加载完成。"
+        }
+    ],
+    "finishEvent": {
+        "eventCommand": "INVOKE_SCENE",
+        "scene": "chat",
+        "sceneResource": "chat-ts003-0001.json"
+    }
+}

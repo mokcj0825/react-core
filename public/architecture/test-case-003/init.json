@@ -1,0 +1,5 @@
+[{
+  "command": "INVOKE_SCENE",
+  "scene": "chat",
+  "sceneResource": "chat-init.json"
+}]

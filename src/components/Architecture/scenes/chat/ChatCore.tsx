@@ -3,6 +3,7 @@ import { useTheater } from '../../TheaterCore';
 import ChatBackground from './ChatBackground';
 //import CharacterSprite from './CharacterSprite';
 import ChatMessage from './ChatMessage';
+import ChatInput from './ChatInput';
 
 interface ShowMessageEvent {
   eventCommand: 'SHOW_MESSAGE';
@@ -16,7 +17,14 @@ interface WriteConsoleEvent {
   type: 'info' | 'warning' | 'error';
 }
 
-type ChatEvent = ShowMessageEvent | WriteConsoleEvent;
+interface RequestInputEvent {
+  eventCommand: 'REQUEST_INPUT';
+  inputType: 'string' | 'number';
+  targetField: string;
+  confirmMessage: string;
+}
+
+type ChatEvent = ShowMessageEvent | WriteConsoleEvent | RequestInputEvent;
 
 interface FinishEvent {
   eventCommand: 'INVOKE_SCENE' | 'HIDE_SCENE';
@@ -35,6 +43,14 @@ const ChatCore: React.FC = () => {
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Utility function to replace template variables in messages
+  const replaceTemplateVariables = useCallback((message: string): string => {
+    return message.replace(/\{(\w+)\}/g, (match, fieldName) => {
+      const value = localStorage.getItem(fieldName);
+      return value || match; // Return original if not found
+    });
+  }, []);
 
   // Memoize the current event to prevent recalculation
   const currentEvent = useMemo(() => {
@@ -92,6 +108,12 @@ const ChatCore: React.FC = () => {
     });
     window.dispatchEvent(consoleEvent);
   }, []);
+
+  // Memoize handleInputComplete to prevent recreation
+  const handleInputComplete = useCallback((value: string) => {
+    // Input completed, move to next event
+    handleMessageComplete();
+  }, [handleMessageComplete]);
 
   useEffect(() => {
     if (!sceneResource) {
@@ -151,11 +173,22 @@ const ChatCore: React.FC = () => {
           <ChatMessage
             message={{
               id: currentEventIndex.toString(),
-              text: currentEvent.message,
-              speaker: currentEvent.characterName,
+              text: replaceTemplateVariables(currentEvent.message),
+              speaker: replaceTemplateVariables(currentEvent.characterName),
               type: 'dialogue'
             }}
             onMessageComplete={handleMessageComplete}
+          />
+        </div>
+      );
+
+    case 'REQUEST_INPUT':
+      return (
+        <div style={containerStyles}>
+          <ChatBackground />
+          <ChatInput
+            event={currentEvent}
+            onInputComplete={handleInputComplete}
           />
         </div>
       );

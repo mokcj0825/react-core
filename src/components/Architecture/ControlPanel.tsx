@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 const TEST_CASES = [
   { id: 'test-case-001', label: 'Test Case 001' },
-  { id: 'test-case-002', label: 'Test Case 002' }
+  { id: 'test-case-002', label: 'Test Case 002' },
+  { id: 'test-case-003', label: 'Test Case 003' }
 ];
 
 const ControlPanel: React.FC = () => {

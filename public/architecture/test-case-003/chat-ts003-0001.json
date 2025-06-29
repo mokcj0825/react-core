@@ -1,0 +1,99 @@
+{
+    "events": [
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "???",
+            "message": "喂……"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "???",
+            "message": "喂……快醒醒……"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "???",
+            "message": "我说……{PAUSE(100)}你有在听我说话么？"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "???",
+            "message": "真是的，我为什么要一大早的在这叫一个笨蛋起床啊！"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "{playerName}",
+            "message": "妮…娜？"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "{playerName}",
+            "message": "哈啊~~~~~早上好~~~~~"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "妮娜",
+            "message": "早{PAUSE(100)}上{PAUSE(100)}好{PAUSE(100)}……"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "妮娜",
+            "message": "{WEIGHT('BOLD').FONT_COLOR('#FF0000').SIZE('LARGE').TO('才怪啦！')}"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "妮娜",
+            "message": "今天可是去领取{FONT_COLOR('#FF00FF').TO('初级驯养师资格')}最终测试的日子啊，{PAUSE(100)}你不会忘掉了吧！"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "{playerName}",
+            "message": "咦…{WEIGHT('BOLD').FONT_COLOR('#FF0000').SIZE('LARGE').TO('什么？！！')}"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "妮娜",
+            "message": "我说，你真有要成为一个{FONT_COLOR('#FF00FF').TO('国家驯养师')}的自觉么？……"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "妮娜",
+            "message": "限你一分钟内起床收拾好！"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "{playerName}",
+            "message": "{WEIGHT('BOLD').TO('我这就起来！')}{PAUSE(100)}…啊…"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "妮娜",
+            "message": "……变{PAUSE(100)}……变{PAUSE(100)} 变{PAUSE(100)} 变{PAUSE(100)}变……{WEIGHT('BOLD').SIZE('LARGE').TO('变态！！！')}"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName":"妮娜",
+            "message": "{PAUSE(100)}{WEIGHT('BOLD').SIZE('LARGE').TO('色魔！！！')}"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName":"妮娜",
+            "message": "{PAUSE(100)}{WEIGHT('BOLD').SIZE('LARGE').TO('露出狂！！！')}"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName":"妮娜",
+            "message": "{PAUSE(100)}{WEIGHT('BOLD').SIZE('LARGE').TO('…快从这里出去啊啊啊！！！')}"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName":"{playerName}",
+            "message": "喂喂这里是我的家啊……"
+        }
+    ],
+    "finishEvent": {
+        "eventCommand": "INVOKE_SCENE",
+        "scene": "chat",
+        "sceneResource": "chat-ts003-0002.json"
+    }
+}

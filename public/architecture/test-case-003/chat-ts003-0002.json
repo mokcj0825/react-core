@@ -1,0 +1,14 @@
+{
+    "events": [
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "Cj mok",
+            "message": "恭喜，这一轮的测试也宣告完成。"
+        }
+    ],
+    "finishEvent": {
+        "eventCommand": "INVOKE_SCENE",
+        "scene": "chat",
+        "sceneResource": "chat-ts003-0002.json"
+    }
+}

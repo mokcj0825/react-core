@@ -121,6 +121,11 @@ const ChatCore: React.FC = () => {
       return;
     }
 
+    // Reset internal state when sceneResource changes
+    setCurrentEventIndex(0);
+    setChatData(null);
+    setError(null);
+
     const fetchChatData = async () => {
       try {
         setLoading(true);
@@ -130,6 +135,7 @@ const ChatCore: React.FC = () => {
           throw new Error(`Failed to fetch chat data: ${response.status}`);
         }
         const data = await response.json();
+        console.log('chat data', data);
         setChatData(data);
         setLoading(false);
       } catch (err) {

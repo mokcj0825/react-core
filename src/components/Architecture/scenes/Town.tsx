@@ -14,6 +14,12 @@ const Town: React.FC = () => {
       return;
     }
 
+    // Only fetch data if this is actually a town resource
+    if (!sceneResource.includes('town')) {
+      setLoading(false);
+      return;
+    }
+
     const fetchScriptData = async () => {
       try {
         setLoading(true);
@@ -23,6 +29,7 @@ const Town: React.FC = () => {
           throw new Error(`Failed to fetch script: ${response.status}`);
         }
         const data = await response.json();
+        console.log('town data', data);
         setScriptData(data);
         setLoading(false);
       } catch (err) {

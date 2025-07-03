@@ -1,0 +1,10 @@
+{
+  "description": "This is the demo town scene.",
+  "onRenderCompleted": [
+    {
+      "command": "STACK_SCENE",
+      "scene": "chat",
+      "sceneResource": "chat-init.json"
+    }
+  ]
+}

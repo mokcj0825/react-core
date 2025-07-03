@@ -1,0 +1,33 @@
+{
+  "events": [
+    {
+      "eventCommand": "SHOW_MESSAGE",
+      "characterName": "妮娜",
+      "message": "说起来，驯养师协会前阵子发出的邀请，你怎么看？"
+    },
+    {
+      "eventCommand": "SHOW_MESSAGE",
+      "characterName": "帕克",
+      "message": "啊{PAUSE(200)}，那个{WEIGHT('BOLD').FONT_COLOR('#FF00FF').TO('拟真模拟训练')}？"
+    },
+    {
+      "eventCommand": "SHOW_MESSAGE",
+      "characterName": "妮娜",
+      "message": "对啊，听说是前文明留下来的装置，在利利托斯的驯养师协会，克里斯汀的冒险者协会与巴尔曼帝国的考古协会三方合作下，复原了部分功能。"
+    },
+    {
+      "eventCommand": "SHOW_MESSAGE",
+      "characterName": "妮娜",
+      "message": "可能是想让我们参与测试吧，毕竟我们这一路走来，遇到的强敌实在是有点离谱了。"
+    },
+    {
+      "eventCommand": "SHOW_MESSAGE",
+      "characterName": "帕克",
+      "message": "反正现在没有什么事情做，那我们就去看一下吧？"
+    }
+  ],
+  "finishEvent": {
+    "eventCommand": "HIDE_SCENE",
+    "scene": "chat"
+  }
+}

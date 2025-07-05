@@ -1,0 +1,22 @@
+{
+    "description": "驯养师协会",
+    "backgroundResource": "society.png",
+    "townConfig": {
+        "town": {
+            "enableAt": {
+                "story": "main",
+                "chapter": 1
+            },
+            "name": "城镇",
+            "destination": "town-001.json"
+        }
+    },
+    "onRenderCompleted": [
+        {
+            "command": "STACK_SCENE",
+            "scene": "chat",
+            "sceneResource": "chat-001.json",
+            "condition": "story.main == 1"
+        }
+    ]
+}

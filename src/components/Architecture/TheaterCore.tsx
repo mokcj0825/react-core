@@ -9,7 +9,8 @@ interface TheaterContextType {
   dispatchTheaterEvent: (event: TheaterCommand) => void;
   dispatchSceneCommand: (command: SceneCommand) => void;
   scenes: Record<Scene, boolean>;
-  sceneResource: string | null;
+  sceneResources: Record<Scene, string | null>;
+  getSceneResource: (scene: Scene) => string | null;
 }
 
 const TheaterContext = createContext<TheaterContextType | undefined>(undefined);
@@ -39,8 +40,15 @@ const TheaterCore: React.FC<TheaterCoreProps> = ({ width = '100%', height = '100
     inventory: false
   });
   
-  // State to track the current scene resource
-  const [sceneResource, setSceneResource] = useState<string | null>(null);
+  // State to track scene resources for each scene type
+  const [sceneResources, setSceneResources] = useState<Record<Scene, string | null>>({
+    homeScreen: null,
+    chat: null,
+    town: null,
+    deployment: null,
+    battlefield: null,
+    inventory: null
+  });
 
   // Add command queue state
   const [commandQueue, setCommandQueue] = useState<SceneCommand[]>([]);
@@ -54,7 +62,10 @@ const TheaterCore: React.FC<TheaterCoreProps> = ({ width = '100%', height = '100
       case 'INVOKE_SCENE':
         const newScenes = SceneCommandUtils.getNewSceneState(command.scene);
         setScenes(newScenes);
-        setSceneResource(command.sceneResource);
+        setSceneResources(prev => ({
+          ...prev,
+          [command.scene]: command.sceneResource
+        }));
         break;
       case 'STACK_SCENE':
         // Keep existing scenes visible and add the new scene
@@ -62,7 +73,10 @@ const TheaterCore: React.FC<TheaterCoreProps> = ({ width = '100%', height = '100
           ...prev,
           [command.scene]: true
         }));
-        setSceneResource(command.sceneResource);
+        setSceneResources(prev => ({
+          ...prev,
+          [command.scene]: command.sceneResource
+        }));
         break;
       case 'HIDE_SCENE':
         // Hide the specified scene while preserving others
@@ -158,7 +172,8 @@ const TheaterCore: React.FC<TheaterCoreProps> = ({ width = '100%', height = '100
     dispatchTheaterEvent: handleTheaterEvent,
     dispatchSceneCommand: handleSceneCommand,
     scenes,
-    sceneResource
+    sceneResources,
+    getSceneResource: (scene: Scene) => sceneResources[scene]
   };
   
   return (

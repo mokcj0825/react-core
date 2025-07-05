@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTheater } from '../../TheaterCore';
 
 const BattlefieldCore: React.FC = () => {
-  const { sceneResource, dispatchSceneCommand } = useTheater();
+  const { getSceneResource, dispatchSceneCommand } = useTheater();
+  const sceneResource = getSceneResource('battlefield');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

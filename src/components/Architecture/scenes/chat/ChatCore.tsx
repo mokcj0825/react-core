@@ -38,7 +38,8 @@ interface ChatData {
 }
 
 const ChatCore: React.FC = () => {
-  const { sceneResource, dispatchSceneCommand } = useTheater();
+  const { getSceneResource, dispatchSceneCommand } = useTheater();
+  const sceneResource = getSceneResource('chat');
   const [chatData, setChatData] = useState<ChatData | null>(null);
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const [loading, setLoading] = useState(true);

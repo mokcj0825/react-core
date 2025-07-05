@@ -3,7 +3,8 @@ import { useTheater } from '../TheaterCore';
 import BattlefieldCore from './battlefield/BattlefieldCore';
 
 const Battlefield: React.FC = () => {
-  const { sceneResource, dispatchSceneCommand } = useTheater();
+  const { getSceneResource, dispatchSceneCommand } = useTheater();
+  const sceneResource = getSceneResource('battlefield');
 
   useEffect(() => {
     if (sceneResource) {

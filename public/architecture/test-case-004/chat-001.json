@@ -1,0 +1,13 @@
+{
+    "events": [
+      {
+        "eventCommand": "SHOW_MESSAGE",
+        "characterName": "协会会长",
+        "message": "帕克，妮娜？你们来啦？"
+      }
+    ],
+    "finishEvent": {
+      "eventCommand": "HIDE_SCENE",
+      "scene": "chat"
+    }
+  }

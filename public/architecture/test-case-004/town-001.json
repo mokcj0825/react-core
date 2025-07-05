@@ -1,0 +1,66 @@
+{
+  "description": "This is the demo town scene.",
+  "backgroundResource": "town-001.png",
+  "townConfig": {
+    "society": {
+      "enableAt": {
+        "story": "main",
+        "chapter": 0,
+        "operator": ">"
+      },
+      "name": "驯养师协会",
+      "destination": "town-society-001.json"
+    },
+    "merchant": {
+      "enableAt": {
+        "story": "main",
+        "chapter": 5,
+        "operator": "=="
+      },
+      "name": "梅姬塔的商店"
+    },
+    "market": {
+      "enableAt": {
+        "story": "main",
+        "chapter": 5,
+        "operator": "=="
+      },
+      "name": "市场"
+    },
+    "tavern": {
+      "enableAt": {
+        "story": "main",
+        "chapter": 5,
+        "operator": "=="
+      },
+      "name": "酒馆"
+    },
+    "farm": {
+      "enableAt": {
+        "story": "main",
+        "chapter": 100,
+        "operator": "<"
+      },
+      "name": "农场",
+      "destination": "town-000.json"
+    },
+    "adventure": {
+      "enableAt": {
+        "story": "main",
+        "chapter": 5,
+        "operator": ">"
+      },
+      "name": "野外探险"
+    },
+    "gate": {
+      "enableAt": {
+        "story": "main",
+        "chapter": 5,
+        "operator": "=="
+      },
+      "name": "大地图"
+    }
+  },
+  "onRenderCompleted": [
+  ]
+}

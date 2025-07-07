@@ -1,5 +1,6 @@
 {
     "description": "驯养师协会",
+    "townName": "驯养师协会",
     "backgroundResource": "society.png",
     "townConfig": {
         "town": {

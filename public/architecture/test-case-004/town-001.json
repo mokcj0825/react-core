@@ -1,5 +1,6 @@
 {
   "description": "This is the demo town scene.",
+  "townName": "王城莉莉托斯",
   "backgroundResource": "town-001.png",
   "townConfig": {
     "society": {

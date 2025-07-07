@@ -24,7 +24,14 @@ interface RequestInputEvent {
   confirmMessage: string;
 }
 
-type ChatEvent = ShowMessageEvent | WriteConsoleEvent | RequestInputEvent;
+interface WriteValueEvent {
+  eventCommand: 'WRITE_VALUE';
+  target: string;
+  operation: string;
+  value: any;
+}
+
+type ChatEvent = ShowMessageEvent | WriteConsoleEvent | RequestInputEvent | WriteValueEvent;
 
 interface FinishEvent {
   eventCommand: 'INVOKE_SCENE' | 'HIDE_SCENE';
@@ -166,6 +173,19 @@ const ChatCore: React.FC = () => {
     case 'WRITE_CONSOLE':
       // Dispatch console event and move to next event
       dispatchConsoleEvent(currentEvent.message, currentEvent.type);
+      handleMessageComplete();
+      return (
+        <div style={containerStyles} onClick={handleClick}>
+          <ChatBackground />
+        </div>
+      );
+
+    case 'WRITE_VALUE':
+      // Handle WRITE_VALUE command to update localStorage - auto-execute
+      if (currentEvent.target && currentEvent.value !== undefined) {
+        localStorage.setItem(currentEvent.target, String(currentEvent.value));
+        console.log(`WRITE_VALUE: Set ${currentEvent.target} = ${currentEvent.value}`);
+      }
       handleMessageComplete();
       return (
         <div style={containerStyles} onClick={handleClick}>

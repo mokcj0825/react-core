@@ -1,0 +1,54 @@
+{
+    "events": [
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "拟真模拟训练的规则如下："
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "1. 模拟会分成两个阶段，第一个阶段是从莉莉托斯出发，直到你们抵达北塞拉姆。"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "2. 离开北塞拉姆后，会根据你们在这三个区域的探索结果，决定后续的走向。直到最终结局。"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "3. 在模拟训练中，你们会遇到各种事件与机遇，主要分为事件，机遇，战斗，而每一个区域，在你们离开之前，都需要挑战一名强敌。"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "4. 这里就需要说到战斗的部分了。战斗分成三种，分别是遭遇战，攻坚战和水面战。"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "5. 在这之前，我先说明整个交战规则。所有的战斗分成两个阶段，分别是部署与交战。"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "6. 在部署阶段，你和妮娜可以自由调整待命区小队的配置，或者消耗指挥点，把小队部署到各个战区，或者调回待命区。请注意，把小队从待命区调到战区，或者把小队从战区调回待命区，都会消耗指挥点。"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "7. 小队的能力，特性，和可使用的战术将会由小队的成员数量决定。在交战阶段，你们可以消耗剩余的战术点，命令小队使用战术。"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "8. 交战完毕后，你们会恢复少量的指挥点，再次进入部署阶段，直到你们其中一方达成了胜利条件为止。"
+        },
+        {
+            "eventCommand": "SHOW_MESSAGE",
+            "characterName": "协会会长",
+            "message": "9. 遭遇战里，双方有相当数量的战区；攻坚战里，防守方会有一个堡垒区，堡垒区的可编入小队是普通战区的三倍，但是进攻方可以获得更多的指挥点；至于水面战，只有一个水面战区，双方只能编入最多六支小队。"
+        }
+    ]
+}

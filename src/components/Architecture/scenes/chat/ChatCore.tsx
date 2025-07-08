@@ -31,7 +31,16 @@ interface WriteValueEvent {
   value: any;
 }
 
-type ChatEvent = ShowMessageEvent | WriteConsoleEvent | RequestInputEvent | WriteValueEvent;
+interface ShowOptionEvent {
+  eventCommand: 'SHOW_OPTION';
+  options: Array<{
+    text: string;
+    command: 'INJECT_SCRIPT';
+    scriptResource: string;
+  }>;
+}
+
+type ChatEvent = ShowMessageEvent | WriteConsoleEvent | RequestInputEvent | WriteValueEvent | ShowOptionEvent;
 
 interface FinishEvent {
   eventCommand: 'INVOKE_SCENE' | 'HIDE_SCENE';
@@ -49,6 +58,8 @@ const ChatCore: React.FC = () => {
   const sceneResource = getSceneResource('chat');
   const [chatData, setChatData] = useState<ChatData | null>(null);
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
+  const [injectedEvents, setInjectedEvents] = useState<ChatEvent[]>([]);
+  const [injectedEventIndex, setInjectedEventIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,8 +74,15 @@ const ChatCore: React.FC = () => {
   // Memoize the current event to prevent recalculation
   const currentEvent = useMemo(() => {
     if (!chatData) return null;
+    
+    // If we have injected events and haven't finished them, use injected events
+    if (injectedEvents.length > 0 && injectedEventIndex < injectedEvents.length) {
+      return injectedEvents[injectedEventIndex];
+    }
+    
+    // Otherwise use main chat events
     return chatData.events[currentEventIndex];
-  }, [chatData, currentEventIndex]);
+  }, [chatData, currentEventIndex, injectedEvents, injectedEventIndex]);
 
   // Memoize the common container styles
   const containerStyles = useMemo(() => ({
@@ -78,6 +96,20 @@ const ChatCore: React.FC = () => {
   const handleMessageComplete = useCallback(() => {
     if (!chatData) return;
 
+    // If we're in injected events, handle them first
+    if (injectedEvents.length > 0 && injectedEventIndex < injectedEvents.length) {
+      if (injectedEventIndex < injectedEvents.length - 1) {
+        setInjectedEventIndex(prev => prev + 1);
+      } else {
+        // Injected events finished, clear them and continue with main events
+        setInjectedEvents([]);
+        setInjectedEventIndex(0);
+        setCurrentEventIndex(prev => prev + 1);
+      }
+      return;
+    }
+
+    // Handle main chat events
     if (currentEventIndex < chatData.events.length - 1) {
       setCurrentEventIndex(prev => prev + 1);
     } else {
@@ -95,7 +127,7 @@ const ChatCore: React.FC = () => {
         });
       }
     }
-  }, [chatData, currentEventIndex, dispatchSceneCommand]);
+  }, [chatData, currentEventIndex, injectedEvents, injectedEventIndex, dispatchSceneCommand]);
 
   // Memoize handleClick to prevent recreation
   const handleClick = useCallback((e: React.MouseEvent) => {
@@ -123,6 +155,29 @@ const ChatCore: React.FC = () => {
     handleMessageComplete();
   }, [handleMessageComplete]);
 
+  // Handle option selection and script injection
+  const handleOptionSelect = useCallback(async (scriptResource: string) => {
+    try {
+      const selectedTestCase = localStorage.getItem('selectedTestCase') || 'test-case-001';
+      const response = await fetch(`/architecture/${selectedTestCase}/${scriptResource}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch script: ${response.status}`);
+      }
+      const scriptData = await response.json();
+      
+      // Inject the script events
+      setInjectedEvents(scriptData.events || []);
+      setInjectedEventIndex(0);
+      
+      // Move to next main event (the option selection is complete)
+      setCurrentEventIndex(prev => prev + 1);
+    } catch (err) {
+      console.error('Error injecting script:', err);
+      // If injection fails, just move to next event
+      setCurrentEventIndex(prev => prev + 1);
+    }
+  }, []);
+
   useEffect(() => {
     if (!sceneResource) {
       setLoading(false);
@@ -131,6 +186,8 @@ const ChatCore: React.FC = () => {
 
     // Reset internal state when sceneResource changes
     setCurrentEventIndex(0);
+    setInjectedEvents([]);
+    setInjectedEventIndex(0);
     setChatData(null);
     setError(null);
 
@@ -217,6 +274,53 @@ const ChatCore: React.FC = () => {
             event={currentEvent}
             onInputComplete={handleInputComplete}
           />
+        </div>
+      );
+
+    case 'SHOW_OPTION':
+      return (
+        <div style={containerStyles}>
+          <ChatBackground />
+          <div style={{
+            position: 'absolute',
+            bottom: '100px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 10,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            minWidth: '300px'
+          }}>
+            {currentEvent.options.map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleOptionSelect(option.scriptResource)}
+                style={{
+                  padding: '15px 20px',
+                  border: '2px solid #34A853',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(52, 168, 83, 0.1)',
+                  color: '#34A853',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  transition: 'all 0.2s ease',
+                  textAlign: 'center'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(52, 168, 83, 0.2)';
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(52, 168, 83, 0.1)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                {option.text}
+              </button>
+            ))}
+          </div>
         </div>
       );
 

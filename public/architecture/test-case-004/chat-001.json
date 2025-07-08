@@ -21,6 +21,29 @@
         "message": "那么，关于拟真模拟训练，有什么想了解的？"
       },
       {
+        "eventCommand": "SHOW_OPTION",
+        "options": [
+          {
+            "text": "关于拟真模拟训练的规则",
+            "fallback": {
+              "optionCommand": "INJECT_SCRIPT",
+              "script": "show_rule.json"
+            }
+          },
+          {
+            "text": "没有了",
+            "fallback": {
+              "optionCommand": "CONTINUE"
+            }
+          }
+        ]
+      },
+      {
+        "eventCommand": "SHOW_MESSAGE",
+        "characterName": "协会会长",
+        "message": "那么，你们准备好了，就和我说一声吧。"
+      },
+      {
         "eventCommand": "WRITE_VALUE",
         "target": "story.main",
         "operation": "SET",

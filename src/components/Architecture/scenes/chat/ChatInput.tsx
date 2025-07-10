@@ -1,11 +1,5 @@
 import React, { useState, useCallback } from 'react';
-
-interface RequestInputEvent {
-  eventCommand: 'REQUEST_INPUT';
-  inputType: 'string' | 'number';
-  targetField: string;
-  confirmMessage: string;
-}
+import {RequestInputEvent} from "./EventCommand.ts";
 
 interface ChatInputProps {
   event: RequestInputEvent;

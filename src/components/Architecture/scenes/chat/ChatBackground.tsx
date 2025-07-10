@@ -12,19 +12,23 @@ const ChatBackground: React.FC<ChatBackgroundProps> = ({
   return (
     <div
       style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
+        ...wrapperStyle,
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
         backgroundColor: backgroundColor,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        zIndex: 1
       }}
     />
   );
 };
 
-export default ChatBackground; 
+export default ChatBackground;
+
+const wrapperStyle = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  zIndex: 1
+} as const;

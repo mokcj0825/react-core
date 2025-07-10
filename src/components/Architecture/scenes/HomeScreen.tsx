@@ -17,6 +17,18 @@ const buttonStyle: React.CSSProperties = {
   boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
 };
 
+const wrapper = {
+  width: '100%',
+  height: '100%',
+  border: '2px dashed #4285F4',
+  borderRadius: '4px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: 'rgba(66, 133, 244, 0.1)'
+} as const;
+
 const HomeScreen: React.FC = () => {
   // Get the theater event dispatcher
   const { dispatchTheaterEvent } = useTheater();
@@ -39,17 +51,7 @@ const HomeScreen: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      width: '100%', 
-      height: '100%',
-      border: '2px dashed #4285F4',
-      borderRadius: '4px',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(66, 133, 244, 0.1)'
-    }}>
+    <div style={wrapper}>
       <div style={{
         marginBottom: '40px',
         textAlign: 'center'
@@ -66,13 +68,13 @@ const HomeScreen: React.FC = () => {
           style={buttonStyle}
           onClick={handleStartGame}
         >
-          Start Game
+          Start
         </button>
         <button 
           style={buttonStyle}
           onClick={handleLoadGame}
         >
-          Load Game
+          Load
         </button>
         <button 
           style={buttonStyle}

@@ -39,6 +39,7 @@ export class SceneCommandUtils {
       deployment: false,
       battlefield: false,
       inventory: false,
+      rogue: false,
     };
     newState[scene] = true;
     return newState;

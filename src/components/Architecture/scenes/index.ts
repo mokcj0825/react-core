@@ -4,6 +4,7 @@ import Town from './Town';
 import Deployment from './Deployment';
 import Battlefield from './Battlefield';
 import Inventory from './Inventory';
+import Rogue from './Rogue';
 
 export {
   HomeScreen,
@@ -11,5 +12,6 @@ export {
   Town,
   Deployment,
   Battlefield,
-  Inventory
+  Inventory,
+  Rogue
 }; 

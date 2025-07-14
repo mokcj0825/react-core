@@ -157,7 +157,7 @@ const RogueCore: React.FC = () => {
     );
   }
 
-  // Render mode selection screen
+  // Render split UI with tutorial and gameplay zones
   return (
     <div style={{
       width: '100%',
@@ -166,7 +166,8 @@ const RogueCore: React.FC = () => {
       backgroundImage: rogueData.backgroundResource ? `url(/architecture/test-case-004/background/${rogueData.backgroundResource})` : 'none',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
+      backgroundRepeat: 'no-repeat',
+      display: 'flex'
     }}>
       {/* Close button */}
       <button
@@ -184,7 +185,8 @@ const RogueCore: React.FC = () => {
           fontSize: '14px',
           fontWeight: 'bold',
           backdropFilter: 'blur(5px)',
-          transition: 'background-color 0.2s'
+          transition: 'background-color 0.2s',
+          zIndex: 1000
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
@@ -196,45 +198,206 @@ const RogueCore: React.FC = () => {
         Close
       </button>
       
+      {/* Tutorial Zone (Left Side) */}
       <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
+        width: '50%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backdropFilter: 'blur(10px)',
+        padding: '20px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '15px',
-        width: '100%',
-        maxWidth: '400px',
-        padding: '20px'
+        borderRight: '2px solid rgba(255, 255, 255, 0.2)'
       }}>
-        {rogueData.mode && rogueData.mode.map((mode, index) => (
-          <button
-            key={index}
-            onClick={() => handleModeSelect(mode.loadComponent)}
-            style={{
-              padding: '15px 20px',
-              backgroundColor: 'rgba(255, 107, 107, 0.9)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              textAlign: 'left',
-              transition: 'background-color 0.2s',
-              backdropFilter: 'blur(5px)',
-              fontWeight: 'bold',
-              fontSize: '16px'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 82, 82, 0.9)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 107, 107, 0.9)';
-            }}
+        <h2 style={{
+          color: 'white',
+          marginBottom: '20px',
+          textAlign: 'center',
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }}>
+          Tutorial
+        </h2>
+        
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '15px'
+        }}>
+          {/* Hardcoded tutorial list */}
+          <div style={{
+            padding: '15px',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '8px',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          }}
           >
-            {mode.name}
-          </button>
-        ))}
+            <h3 style={{ color: 'white', margin: '0 0 10px 0', fontSize: '18px' }}>
+              Basic Controls
+            </h3>
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: 0, fontSize: '14px' }}>
+              Learn the basic controls and movement mechanics
+            </p>
+          </div>
+          
+          <div style={{
+            padding: '15px',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '8px',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          }}
+          >
+            <h3 style={{ color: 'white', margin: '0 0 10px 0', fontSize: '18px' }}>
+              Combat System
+            </h3>
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: 0, fontSize: '14px' }}>
+              Understanding the turn-based combat mechanics
+            </p>
+          </div>
+          
+          <div style={{
+            padding: '15px',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '8px',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          }}
+          >
+            <h3 style={{ color: 'white', margin: '0 0 10px 0', fontSize: '18px' }}>
+              Character Classes
+            </h3>
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: 0, fontSize: '14px' }}>
+              Learn about different character classes and their abilities
+            </p>
+          </div>
+          
+          <div style={{
+            padding: '15px',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '8px',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+          }}
+          >
+            <h3 style={{ color: 'white', margin: '0 0 10px 0', fontSize: '18px' }}>
+              Advanced Strategies
+            </h3>
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: 0, fontSize: '14px' }}>
+              Master advanced combat strategies and tactics
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Gameplay Zone (Right Side) */}
+      <div style={{
+        width: '50%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backdropFilter: 'blur(5px)',
+        padding: '20px',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <h2 style={{
+          color: 'white',
+          marginBottom: '20px',
+          textAlign: 'center',
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }}>
+          Gameplay Modes
+        </h2>
+        
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '15px',
+          justifyContent: 'center'
+        }}>
+          {rogueData.mode && rogueData.mode.map((mode, index) => (
+            <button
+              key={index}
+              onClick={() => handleModeSelect(mode.loadComponent)}
+              style={{
+                padding: '20px',
+                backgroundColor: 'rgba(255, 107, 107, 0.9)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.3s',
+                backdropFilter: 'blur(5px)',
+                fontWeight: 'bold',
+                fontSize: '18px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 82, 82, 0.9)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.4)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 107, 107, 0.9)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+              }}
+            >
+              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+                {mode.name}
+              </div>
+              <div style={{ 
+                fontSize: '14px', 
+                opacity: 0.9,
+                fontWeight: 'normal'
+              }}>
+                {mode.description}
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,23 @@
+{
+    "description": "拟真模拟训练",
+    "townName": "拟真模拟训练",
+    "backgroundResource": "rogue.png",
+    "townConfig": {
+        "society": {
+            "enableAt": {
+              "story": "main",
+              "chapter": 0,
+              "operator": ">"
+            },
+            "name": "驯养师协会",
+            "destination": "town-society-001.json"
+        }
+    },
+    "onRenderCompleted": [
+        {
+            "command": "STACK_SCENE",
+            "scene": "rogue",
+            "sceneResource": "rogue-mode-001.json"
+        }
+    ]
+}

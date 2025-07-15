@@ -4,7 +4,52 @@
         "eventCommand": "SHOW_MESSAGE",
         "characterName": "协会会长",
         "message": "帕克，妮娜？你们来啦？"
-      }
+      },
+      {
+        "eventCommand": "SHOW_MESSAGE",
+        "characterName": "帕克",
+        "message": "是的，会长。我们是来参加那个{WEIGHT('BOLD').FONT_COLOR('#FF00FF').TO('拟真模拟训练')}的。"
+      },
+      {
+        "eventCommand": "SHOW_MESSAGE",
+        "characterName": "协会会长",
+        "message": "好好好，你们肯来协助，真的是太好了。你们的经历一定可以极大程度地丰富我们给其他驯养师的训练材料。"
+      },
+      {
+        "eventCommand": "SHOW_MESSAGE",
+        "characterName": "协会会长",
+        "message": "那么，关于拟真模拟训练，有什么想了解的？"
+      },
+      {
+        "eventCommand": "SHOW_OPTION",
+        "options": [
+          {
+            "text": "关于拟真模拟训练的规则",
+            "fallback": {
+              "optionCommand": "INJECT_SCRIPT",
+              "script": "show_rule.json"
+            }
+          },
+          {
+            "text": "没有了",
+            "fallback": {
+              "optionCommand": "CONTINUE"
+            }
+          }
+        ]
+      },
+      {
+        "eventCommand": "SHOW_MESSAGE",
+        "characterName": "协会会长",
+        "message": "那么，你们准备好了，就和我说一声吧。"
+      },
+      {
+        "eventCommand": "WRITE_VALUE",
+        "target": "story.main",
+        "operation": "SET",
+        "value": 2,
+        "condition": "story.main == 1"
+    }
     ],
     "finishEvent": {
       "eventCommand": "HIDE_SCENE",

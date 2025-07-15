@@ -5,7 +5,8 @@ import {
   Town, 
   Deployment, 
   Battlefield, 
-  Inventory 
+  Inventory,
+  Rogue
 } from './scenes';
 
 interface TheaterProps {
@@ -18,6 +19,7 @@ interface TheaterProps {
     deployment: boolean;
     battlefield: boolean;
     inventory: boolean;
+    rogue: boolean;
   };
 }
 
@@ -37,7 +39,8 @@ const Theater: React.FC<TheaterProps> = ({
     town: false,
     deployment: false,
     battlefield: false,
-    inventory: false
+    inventory: false,
+    rogue: false
   }
 }) => {
   // Handle case when no scenes are selected
@@ -123,6 +126,20 @@ const Theater: React.FC<TheaterProps> = ({
           zIndex: Z_INDEX.TOWN_DEPLOYMENT_BATTLEFIELD
         }}>
           <Battlefield />
+        </div>
+      )}
+      
+      {scenes.rogue && (
+        <div style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0,
+          padding: '10px',
+          zIndex: Z_INDEX.TOWN_DEPLOYMENT_BATTLEFIELD
+        }}>
+          <Rogue />
         </div>
       )}
       

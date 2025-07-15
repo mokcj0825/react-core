@@ -1,5 +1,6 @@
 {
     "description": "This is the farm",
+    "townName": "牧场",
     "backgroundResource": "farm.png",
     "townConfig": {
         "town": {
@@ -15,7 +16,7 @@
         {
           "command": "STACK_SCENE",
           "scene": "chat",
-          "sceneResource": "chat-001.json",
+          "sceneResource": "chat-init.json",
           "condition": "story.main == 0"
         },
         {

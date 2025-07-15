@@ -4,27 +4,7 @@ import ChatBackground from './ChatBackground';
 //import CharacterSprite from './CharacterSprite';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
-
-interface ShowMessageEvent {
-  eventCommand: 'SHOW_MESSAGE';
-  characterName: string;
-  message: string;
-}
-
-interface WriteConsoleEvent {
-  eventCommand: 'WRITE_CONSOLE';
-  message: string;
-  type: 'info' | 'warning' | 'error';
-}
-
-interface RequestInputEvent {
-  eventCommand: 'REQUEST_INPUT';
-  inputType: 'string' | 'number';
-  targetField: string;
-  confirmMessage: string;
-}
-
-type ChatEvent = ShowMessageEvent | WriteConsoleEvent | RequestInputEvent;
+import {ChatEvent} from "./EventCommand.ts";
 
 interface FinishEvent {
   eventCommand: 'INVOKE_SCENE' | 'HIDE_SCENE';
@@ -42,10 +22,11 @@ const ChatCore: React.FC = () => {
   const sceneResource = getSceneResource('chat');
   const [chatData, setChatData] = useState<ChatData | null>(null);
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
+  const [injectedEvents, setInjectedEvents] = useState<ChatEvent[]>([]);
+  const [injectedEventIndex, setInjectedEventIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Utility function to replace template variables in messages
   const replaceTemplateVariables = useCallback((message: string): string => {
     return message.replace(/\{(\w+)\}/g, (match, fieldName) => {
       const value = localStorage.getItem(fieldName);
@@ -53,13 +34,16 @@ const ChatCore: React.FC = () => {
     });
   }, []);
 
-  // Memoize the current event to prevent recalculation
   const currentEvent = useMemo(() => {
     if (!chatData) return null;
-    return chatData.events[currentEventIndex];
-  }, [chatData, currentEventIndex]);
 
-  // Memoize the common container styles
+    if (injectedEvents.length > 0 && injectedEventIndex < injectedEvents.length) {
+      return injectedEvents[injectedEventIndex];
+    }
+
+    return chatData.events[currentEventIndex];
+  }, [chatData, currentEventIndex, injectedEvents, injectedEventIndex]);
+
   const containerStyles = useMemo(() => ({
     position: 'relative' as const,
     width: '100%',
@@ -67,14 +51,23 @@ const ChatCore: React.FC = () => {
     cursor: 'pointer'
   }), []);
 
-  // Memoize handleMessageComplete to prevent recreation
   const handleMessageComplete = useCallback(() => {
     if (!chatData) return;
+
+    if (injectedEvents.length > 0 && injectedEventIndex < injectedEvents.length) {
+      if (injectedEventIndex < injectedEvents.length - 1) {
+        setInjectedEventIndex(prev => prev + 1);
+      } else {
+        setInjectedEvents([]);
+        setInjectedEventIndex(0);
+        setCurrentEventIndex(prev => prev + 1);
+      }
+      return;
+    }
 
     if (currentEventIndex < chatData.events.length - 1) {
       setCurrentEventIndex(prev => prev + 1);
     } else {
-      // All messages shown, trigger finish event
       if (chatData.finishEvent.eventCommand === 'HIDE_SCENE') {
         dispatchSceneCommand({
           command: 'HIDE_SCENE',
@@ -88,21 +81,17 @@ const ChatCore: React.FC = () => {
         });
       }
     }
-  }, [chatData, currentEventIndex, dispatchSceneCommand]);
+  }, [chatData, currentEventIndex, injectedEvents, injectedEventIndex, dispatchSceneCommand]);
 
-  // Memoize handleClick to prevent recreation
   const handleClick = useCallback((e: React.MouseEvent) => {
-    // Check if the click was on an interactive element
     const target = e.target as HTMLElement;
     const isInteractive = target.closest('button, input, select, textarea, [role="button"]');
-    
-    // Only proceed if not clicking an interactive element
+
     if (!isInteractive) {
       handleMessageComplete();
     }
   }, [handleMessageComplete]);
 
-  // Memoize the console event dispatch
   const dispatchConsoleEvent = useCallback((message: string, type: 'info' | 'warning' | 'error') => {
     const consoleEvent = new CustomEvent('consoleWrite', {
       detail: { message, type }
@@ -110,11 +99,38 @@ const ChatCore: React.FC = () => {
     window.dispatchEvent(consoleEvent);
   }, []);
 
-  // Memoize handleInputComplete to prevent recreation
   const handleInputComplete = useCallback((value: string) => {
-    // Input completed, move to next event
     handleMessageComplete();
   }, [handleMessageComplete]);
+
+  const handleOptionSelect = useCallback(async (scriptResource: string) => {
+    console.log('handleOptionSelect called with scriptResource:', scriptResource);
+
+    if (!scriptResource || scriptResource === 'undefined') {
+      console.error('Invalid scriptResource:', scriptResource);
+      setCurrentEventIndex(prev => prev + 1);
+      return;
+    }
+    
+    try {
+      const selectedTestCase = localStorage.getItem('selectedTestCase') || 'test-case-001';
+      const fullPath = `/architecture/${selectedTestCase}/${scriptResource}`;
+      
+      const response = await fetch(fullPath);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch script: ${response.status}`);
+      }
+      const scriptData = await response.json();
+      console.log('Script data loaded:', scriptData);
+
+      setInjectedEvents(scriptData.events || []);
+      setInjectedEventIndex(0);
+      setCurrentEventIndex(prev => prev + 1);
+    } catch (err) {
+      console.error('Error injecting script:', err);
+      setCurrentEventIndex(prev => prev + 1);
+    }
+  }, []);
 
   useEffect(() => {
     if (!sceneResource) {
@@ -122,10 +138,7 @@ const ChatCore: React.FC = () => {
       return;
     }
 
-    // Reset internal state when sceneResource changes
-    setCurrentEventIndex(0);
-    setChatData(null);
-    setError(null);
+    resetScene();
 
     const fetchChatData = async () => {
       try {
@@ -149,6 +162,14 @@ const ChatCore: React.FC = () => {
     fetchChatData();
   }, [sceneResource]);
 
+  const resetScene = () => {
+    setCurrentEventIndex(0);
+    setInjectedEvents([]);
+    setInjectedEventIndex(0);
+    setChatData(null);
+    setError(null);
+  }
+
   if (loading) {
     return <div>Loading chat data...</div>;
   }
@@ -161,11 +182,21 @@ const ChatCore: React.FC = () => {
     return <div>No chat data available</div>;
   }
 
-  // Handle different commands using switch-case
   switch (currentEvent.eventCommand) {
     case 'WRITE_CONSOLE':
-      // Dispatch console event and move to next event
       dispatchConsoleEvent(currentEvent.message, currentEvent.type);
+      handleMessageComplete();
+      return (
+        <div style={containerStyles} onClick={handleClick}>
+          <ChatBackground />
+        </div>
+      );
+
+    case 'WRITE_VALUE':
+      if (currentEvent.target && currentEvent.value !== undefined) {
+        localStorage.setItem(currentEvent.target, String(currentEvent.value));
+        console.log(`WRITE_VALUE: Set ${currentEvent.target} = ${currentEvent.value}`);
+      }
       handleMessageComplete();
       return (
         <div style={containerStyles} onClick={handleClick}>
@@ -197,6 +228,76 @@ const ChatCore: React.FC = () => {
             event={currentEvent}
             onInputComplete={handleInputComplete}
           />
+        </div>
+      );
+
+    case 'SHOW_OPTION':
+      if (!currentEvent.options || !Array.isArray(currentEvent.options) || currentEvent.options.length === 0) {
+        handleMessageComplete();
+        return (
+          <div style={containerStyles} onClick={handleClick}>
+            <ChatBackground />
+          </div>
+        );
+      }
+      
+      return (
+        <div style={containerStyles}>
+          <ChatBackground />
+          <div style={{
+            position: 'absolute',
+            bottom: '100px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 10,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            minWidth: '300px'
+          }}>
+            {currentEvent.options.map((option, index) => {
+              if (!option.text || !option.fallback?.optionCommand) {
+                return null;
+              }
+
+              const handleOptionClick = () => {
+                if (option.fallback.optionCommand === 'INJECT_SCRIPT' && option.fallback.script) {
+                  handleOptionSelect(option.fallback.script);
+                } else if (option.fallback.optionCommand === 'CONTINUE') {
+                  setCurrentEventIndex(prev => prev + 1);
+                }
+              };
+              
+              return (
+                <button
+                  key={index}
+                  onClick={handleOptionClick}
+                  style={{
+                    padding: '15px 20px',
+                    border: '2px solid #34A853',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(52, 168, 83, 0.1)',
+                    color: '#34A853',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    transition: 'all 0.2s ease',
+                    textAlign: 'center'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(52, 168, 83, 0.2)';
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(52, 168, 83, 0.1)';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  {option.text}
+                </button>
+              );
+            })}
+          </div>
         </div>
       );
 

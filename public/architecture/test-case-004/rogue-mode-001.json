@@ -1,0 +1,26 @@
+{
+    "description": "Rogue mode training simulation",
+    "backgroundResource": "rogue.png",
+    "mode": [
+        {
+            "name": "拟真模拟训练 - 莉莉托斯篇",
+            "description": "莉莉托斯篇",
+            "loadComponent": "rogue-mode-001"
+        }
+    ],
+    "onRenderCompleted": [
+        {
+            "command": "WRITE_CONSOLE",
+            "message": "Rogue mode initialized successfully",
+            "type": "info"
+        }
+    ],
+    "onClosed": [
+        {
+            "command": "INVOKE_SCENE",
+            "scene": "town",
+            "sceneResource": "town-society-001.json"
+        }
+    ]
+
+}

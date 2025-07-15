@@ -1,1 +1,1 @@
-export type Scene = 'homeScreen' | 'chat' | 'town' | 'deployment' | 'battlefield' | 'inventory';
+export type Scene = 'homeScreen' | 'chat' | 'town' | 'deployment' | 'battlefield' | 'inventory' | 'rogue';

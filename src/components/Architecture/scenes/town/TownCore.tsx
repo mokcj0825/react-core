@@ -40,7 +40,7 @@ interface InvokeSceneCommand {
 type OnRenderCompletedCommand = StackSceneCommand | WriteValueCommand | InvokeSceneCommand;
 
 interface TownData {
-  description: string;
+  townName?: string;
   backgroundResource?: string;
   townConfig?: TownConfig;
   onRenderCompleted?: OnRenderCompletedCommand[];
@@ -223,6 +223,22 @@ const TownCore: React.FC = () => {
         }} />
       )}
       
+      {/* Town Name - Static at top-left corner */}
+      <div style={{
+        position: 'absolute',
+        top: '20px',
+        left: '20px',
+        zIndex: 3,
+        padding: '10px 15px',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        color: 'white',
+        borderRadius: '4px',
+        fontSize: '18px',
+        fontWeight: 'bold'
+      }}>
+        {townData.townName || 'N/A'}
+      </div>
+      
       {/* Town Locations */}
       {townData.townConfig && (
         <div style={{
@@ -246,10 +262,6 @@ const TownCore: React.FC = () => {
             maxHeight: '80%',
             overflow: 'auto'
           }}>
-            <h3 style={{ margin: '0 0 15px 0', textAlign: 'center' }}>
-              {townData.description}
-            </h3>
-            
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',

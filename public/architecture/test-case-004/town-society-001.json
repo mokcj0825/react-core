@@ -1,5 +1,6 @@
 {
     "description": "驯养师协会",
+    "townName": "驯养师协会",
     "backgroundResource": "society.png",
     "townConfig": {
         "town": {
@@ -9,6 +10,14 @@
             },
             "name": "城镇",
             "destination": "town-001.json"
+        },
+        "rogue": {
+            "enableAt": {
+                "story": "main",
+                "chapter": 2
+            },
+            "name": "拟真模拟训练",
+            "destination": "town-rogue-mode.json"
         }
     },
     "onRenderCompleted": [

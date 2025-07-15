@@ -1,7 +1,10 @@
 const RogueMode001 = () => {
     return (
-        <div>
-            <h1>Lilitosse mode here</h1>
+        <div style={{
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'white'
+        }}>
         </div>
     )
 };

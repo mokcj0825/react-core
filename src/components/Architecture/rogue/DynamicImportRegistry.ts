@@ -6,6 +6,8 @@ interface ComponentRegistry {
 // Central registry for all dynamic components
 const COMPONENT_REGISTRY: ComponentRegistry = {
   'Squad': () => import('./Squad'),
+  'rogue-mode-tutorial': () => import('./rogue-mode-tutorial'),
+  'rogue-mode-001': () => import('./rogue-mode-001'),
   // Add more components here as needed
   // 'ComponentName': () => import('./ComponentName'),
 };

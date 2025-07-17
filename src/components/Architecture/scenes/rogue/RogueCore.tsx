@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheater } from '../../TheaterCore';
+import { dynamicImportManager } from '../../rogue/DynamicImportRegistry';
 
 interface RogueMode {
   name: string;
@@ -63,9 +64,8 @@ const RogueCore: React.FC = () => {
     try {
       setSelectedMode(loadComponent);
 
-      // Dynamically import the component
-      const module = await import(`../../rogue/${loadComponent}`);
-      const Component = module.default;
+      // Use the dynamic import manager for scalable component loading
+      const Component = await dynamicImportManager.loadComponent(loadComponent);
       setDynamicComponent(() => Component);
     } catch (err) {
       console.error('Error loading rogue mode component:', err);

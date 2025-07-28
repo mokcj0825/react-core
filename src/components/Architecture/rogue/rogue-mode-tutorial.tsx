@@ -104,7 +104,18 @@ const RogueModeTutorial = () => {
                 </button>
                 
                 {/* Render specific components based on selected section */}
-                {selectedSection === 'squad-formation' && <Squad />}
+                {selectedSection === 'squad-formation' && (
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 1000
+                  }}>
+                    <Squad />
+                  </div>
+                )}
                 {selectedSection !== 'squad-formation' && (
                     <div style={{
                         position: 'absolute',

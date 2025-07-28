@@ -8,6 +8,7 @@ import Log from './components/Log';
 import Back from './components/Back';
 import Architecture from './components/Architecture/Architecture';
 import './App.css';
+import TutorialChat from './components/Labs/TutorialChat';
 
 // Home component that displays the four links
 const Home: React.FC = () => {
@@ -63,6 +64,7 @@ const App: React.FC = () => {
           <Route path="/log" element={<Log />} />
           <Route path="/architecture" element={<Architecture />} />
           <Route path="/back" element={<Back />} />
+          <Route path="/labs" element={<TutorialChat />} />
         </Routes>
       </div>
     </Router>

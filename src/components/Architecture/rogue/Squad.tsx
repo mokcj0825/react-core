@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MaskLayer from '../../Labs/MaskLayer';
 
 interface Unit {
   id: string;
@@ -17,6 +18,21 @@ interface Squad {
   leader?: Unit; // Highest rarity unit becomes leader
 }
 
+interface TutorialStep {
+  id: string;
+  text: string;
+  holePosition: {
+    x: `${number}px` | `${number}%`;
+    y: `${number}px` | `${number}%`;
+    size: `${number}px` | `${number}%`;
+    anchor: 'ANCHOR_MIDDLE' | 'ANCHOR_TOP_LEFT' | 'ANCHOR_TOP_RIGHT' | 'ANCHOR_BOTTOM_LEFT' | 'ANCHOR_BOTTOM_RIGHT';
+  };
+  textPosition: {
+    x: `${number}px` | `${number}%`;
+    y: `${number}px` | `${number}%`;
+  };
+}
+
 const Squad: React.FC = () => {
   const [availableUnits, setAvailableUnits] = useState<Unit[]>([
     { id: '1', name: '绿色史莱姆', type: 'slime', rarity: 1, isSelected: false },
@@ -33,6 +49,54 @@ const Squad: React.FC = () => {
     { id: 'squad-3', name: '小队 3', units: [], maxSize: 7 },
     { id: 'squad-4', name: '小队 4', units: [], maxSize: 7 }
   ]);
+
+  const tutorialScript: TutorialStep[] = [
+    {
+      id: 'tutorial-01',
+      text: '这里是待命区域',
+      holePosition: {
+        x: '150px',
+        y: '200px',
+        size: '300px',
+        anchor: 'ANCHOR_MIDDLE'
+      },
+      textPosition: {
+        x: '150px',
+        y: '350px'
+      }
+    },
+    {
+      id: 'tutorial-02',
+      text: '这里是小队区域',
+      holePosition: {
+        x: '50%',
+        y: '50%',
+        size: '400px',
+        anchor: 'ANCHOR_MIDDLE'
+      },
+      textPosition: {
+        x: '50%',
+        y: '80%'
+      }
+    },
+    {
+      id: 'tutorial-03',
+      text: '这里会根据小队状态显示可用的战术。',
+      holePosition: {
+        x: '85%',
+        y: '50%',
+        size: '200px',
+        anchor: 'ANCHOR_MIDDLE'
+      },
+      textPosition: {
+        x: '85%',
+        y: '80%'
+      }
+    }
+  ];
+
+  const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(true);
 
   const [activeSquadId, setActiveSquadId] = useState<string | null>(null);
 
@@ -109,7 +173,20 @@ const Squad: React.FC = () => {
     );
   };
 
+  const handleTutorialNext = () => {
+    if (currentTutorialStep < tutorialScript.length - 1) {
+      setCurrentTutorialStep(prev => prev + 1);
+    } else {
+      setShowTutorial(false);
+    }
+  };
+
+  const handleTutorialSkip = () => {
+    setShowTutorial(false);
+  };
+
   const activeSquad = activeSquadId ? squads.find(s => s.id === activeSquadId) : null;
+  const currentStep = tutorialScript[currentTutorialStep];
 
   return (
     <div style={{
@@ -119,8 +196,10 @@ const Squad: React.FC = () => {
       padding: '20px',
       display: 'flex',
       flexDirection: 'column',
-      gap: '20px'
+      gap: '20px',
+      position: 'relative'
     }}>
+      
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -176,18 +255,18 @@ const Squad: React.FC = () => {
                   textAlign: 'center',
                   opacity: activeSquadId && !unit.isSelected ? '1' : '0.7'
                 }}
-                                  onMouseOver={(e) => {
-                    if (activeSquadId && !unit.isSelected) {
-                      e.currentTarget.style.backgroundColor = '#e9ecef';
-                      e.currentTarget.style.opacity = '1';
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (activeSquadId && !unit.isSelected) {
-                      e.currentTarget.style.backgroundColor = '#f8f9fa';
-                      e.currentTarget.style.opacity = '1';
-                    }
-                  }}
+                onMouseOver={(e) => {
+                  if (activeSquadId && !unit.isSelected) {
+                    e.currentTarget.style.backgroundColor = '#e9ecef';
+                    e.currentTarget.style.opacity = '1';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (activeSquadId && !unit.isSelected) {
+                    e.currentTarget.style.backgroundColor = '#f8f9fa';
+                    e.currentTarget.style.opacity = '1';
+                  }
+                }}
               >
                 <div style={{ fontWeight: 'bold', marginBottom: '5px', fontSize: '12px' }}>
                   {unit.name}
@@ -397,6 +476,72 @@ const Squad: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Tutorial Overlay */}
+      {showTutorial && (
+        <>
+          <MaskLayer
+            holePosition={currentStep.holePosition}
+            backgroundColor="rgba(0, 0, 0, 0.7)"
+          />
+          <div style={{
+            position: 'absolute',
+            left: currentStep.textPosition.x,
+            top: currentStep.textPosition.y,
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            color: 'white',
+            padding: '20px',
+            borderRadius: '12px',
+            textAlign: 'center',
+            zIndex: 1000,
+            minWidth: '300px'
+          }}>
+            <div style={{ marginBottom: '15px', fontSize: '16px' }}>
+              {currentStep.text}
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: '10px',
+              justifyContent: 'center'
+            }}>
+              <button
+                onClick={handleTutorialSkip}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#666',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                跳过教程
+              </button>
+              <button
+                onClick={handleTutorialNext}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#4ecdc4',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                {currentTutorialStep === tutorialScript.length - 1 ? '完成' : '下一步'}
+              </button>
+            </div>
+            <div style={{
+              marginTop: '10px',
+              fontSize: '12px',
+              opacity: 0.7
+            }}>
+              {currentTutorialStep + 1} / {tutorialScript.length}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

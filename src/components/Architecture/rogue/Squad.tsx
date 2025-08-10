@@ -380,19 +380,7 @@ const Squad: React.FC = () => {
                 </div>
                 
                 {squad.units.length === 0 ? (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '80px',
-                    color: '#999',
-                    fontSize: '12px',
-                    border: '2px dashed #ddd',
-                    borderRadius: '6px',
-                    backgroundColor: 'white'
-                  }}>
-                    空小队
-                  </div>
+                  <EmptySquad />
                 ) : (
                   <div style={{
                     display: 'grid',
@@ -505,40 +493,10 @@ const Squad: React.FC = () => {
               gap: '10px',
               justifyContent: 'center'
             }}>
-              <button
-                onClick={handleTutorialSkip}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#666',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
-                }}
-              >
-                跳过教程
-              </button>
-              <button
-                onClick={handleTutorialNext}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#4ecdc4',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer'
-                }}
-              >
-                {currentTutorialStep === tutorialScript.length - 1 ? '完成' : '下一步'}
-              </button>
+              <ButtonSkipTutorial onClick={handleTutorialSkip} />
+              <ButtonNextTutorial onClick={handleTutorialNext} isLastStep={currentTutorialStep === tutorialScript.length - 1} />
             </div>
-            <div style={{
-              marginTop: '10px',
-              fontSize: '12px',
-              opacity: 0.7
-            }}>
-              {currentTutorialStep + 1} / {tutorialScript.length}
-            </div>
+            <TutorialStepCount currenScriptIndex={currentTutorialStep} totalScriptLength={tutorialScript.length} />
           </div>
         </>
       )}
@@ -546,4 +504,70 @@ const Squad: React.FC = () => {
   );
 };
 
-export default Squad; 
+export default Squad;
+
+const EmptySquad = () => {
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '80px',
+      color: '#999',
+      fontSize: '12px',
+      border: '2px dashed #ddd',
+      borderRadius: '6px',
+      backgroundColor: 'white'
+    }}>
+      空小队
+    </div>
+  )
+}
+
+const ButtonSkipTutorial = ({onClick}: {onClick: () => void}) => {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: '8px 16px',
+        backgroundColor: '#666',
+        color: 'white',
+        border: 'none',
+        borderRadius: '6px',
+        cursor: 'pointer'
+      }}
+    >
+      跳过教程
+    </button>
+  )
+}
+
+const ButtonNextTutorial = ({onClick, isLastStep}: {onClick: () => void, isLastStep: boolean} ) => {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: '8px 16px',
+        backgroundColor: '#4ecdc4',
+        color: 'white',
+        border: 'none',
+        borderRadius: '6px',
+        cursor: 'pointer'
+      }}
+    >
+      {isLastStep ? '完成' : '下一步'}
+    </button>
+  )
+}
+
+const TutorialStepCount = ({currenScriptIndex, totalScriptLength}: {currenScriptIndex: number, totalScriptLength: number}) => {
+  return (
+    <div style={{
+      marginTop: '10px',
+      fontSize: '12px',
+      opacity: 0.7
+    }}>
+      {currenScriptIndex + 1} / {totalScriptLength}
+    </div>
+  )
+}

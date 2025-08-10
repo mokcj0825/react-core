@@ -32,54 +32,14 @@ const ConsolePanel: React.FC = () => {
   };
 
   return (
-    <div style={{
-      padding: '20px',
-      backgroundColor: '#1e1e1e',
-      borderRadius: '8px',
-      marginBottom: '20px',
-      color: '#fff',
-      fontFamily: 'monospace'
-    }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '10px'
-      }}>
-        <h3 style={{ margin: 0 }}>Console</h3>
-        <button
-          onClick={clearMessages}
-          style={{
-            padding: '5px 10px',
-            backgroundColor: '#333',
-            border: 'none',
-            borderRadius: '4px',
-            color: '#fff',
-            cursor: 'pointer'
-          }}
-        >
-          Clear
-        </button>
+    <div style={wrapperStyle}>
+      <div style={headerWrapperStyle}>
+        <h3>Console</h3>
+        <ClearLogButton onClear={clearMessages} />
       </div>
-      <div style={{
-        backgroundColor: '#000',
-        padding: '10px',
-        borderRadius: '4px',
-        height: '200px',
-        overflowY: 'auto'
-      }}>
+      <div style={messageWrapperStyle}>
         {messages.map(msg => (
-          <div
-            key={msg.id}
-            style={{
-              marginBottom: '5px',
-              color: msg.type === 'error' ? '#ff6b6b' : 
-                     msg.type === 'warning' ? '#ffd93d' : '#fff'
-            }}
-          >
-            <span style={{ color: '#888' }}>[{msg.timestamp}] </span>
-            {msg.message}
-          </div>
+          <LogMessage msg={msg} />
         ))}
         {messages.length === 0 && (
           <div style={{ color: '#666' }}>No messages</div>
@@ -89,4 +49,69 @@ const ConsolePanel: React.FC = () => {
   );
 };
 
-export default ConsolePanel; 
+export default ConsolePanel;
+
+const ClearLogButton = ({onClear}: {onClear: () => void}) => {
+  return (
+    <button
+      onClick={onClear}
+      style={clearLogStyle}
+    >
+      Clear
+    </button>
+  )
+}
+
+const LogMessage = ({msg}: { msg: ConsoleMessage }) => {
+  return (
+    <div
+      key={msg.id}
+      style={{
+        marginBottom: '5px',
+        color: msg.type === 'error' ? '#ff6b6b' :
+          msg.type === 'warning' ? '#ffd93d' : '#fff'
+      }}
+    >
+      <TimeStamp timeStamp={msg.timestamp} />
+      {msg.message}
+    </div>
+  )
+}
+
+const TimeStamp = ({timeStamp}: { timeStamp: string }) => {
+  return (
+    <span style={{color: '#888'}}>[{timeStamp}]</span>
+  )
+}
+
+const wrapperStyle = {
+  padding: '20px',
+  backgroundColor: '#1e1e1e',
+  borderRadius: '8px',
+  marginBottom: '20px',
+  color: '#fff',
+  fontFamily: 'monospace'
+}
+
+const headerWrapperStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '10px'
+}
+
+const clearLogStyle = {
+  padding: '5px 10px',
+  backgroundColor: '#333',
+  border: 'none',
+  borderRadius: '4px',
+  color: '#fff',
+  cursor: 'pointer'
+}
+
+const messageWrapperStyle = {
+  backgroundColor: '#000',
+  padding: '10px',
+  borderRadius: '4px',
+  height: '200px'
+}
